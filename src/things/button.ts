@@ -1,5 +1,5 @@
 import type { GameAssets } from '@/scenes/PlayScene';
-import type { GameObjects } from 'phaser';
+import type { GameObjects, Textures } from 'phaser';
 
 export enum ButtonType {
   Chicken,
@@ -9,6 +9,16 @@ export interface Button {
   sprite: GameObjects.Sprite;
   selected: boolean;
   buttonType: ButtonType;
+}
+
+function getButtonTypeIcon(
+  buttonType: ButtonType,
+  assets: GameAssets,
+): Textures.Texture {
+  switch (buttonType) {
+    case ButtonType.Chicken:
+      return assets.chickenTexture;
+  }
 }
 
 export function createButton(
@@ -27,6 +37,8 @@ export function createButton(
     selected: false,
     buttonType,
   };
+
+  add.sprite(x, y, getButtonTypeIcon(buttonType, assets), 0);
 
   sprite.on('pointerover', () => toggleSelected(button, assets));
   sprite.on('pointerout', () => toggleSelected(button, assets));

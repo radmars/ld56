@@ -5,7 +5,7 @@ Thumbs.db
 .yarn
 
 # Vendors
-node_modules/
+node_modules
 
 # Build
 dist

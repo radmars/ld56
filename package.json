@@ -1,0 +1,27 @@
+{
+	"name": "ld56",
+	"version": "1.0.0",
+	"description": "",
+	"main": "dist/index.js",
+	"scripts": {
+		"dev": "vite",
+		"build": "vite build",
+		"serve": "vite preview",
+		"syntax": "tsc --noEmit",
+		"eslint": "eslint ."
+	},
+	"author": "radmars",
+	"license": "MIT",
+	"homepage": "https://github.com/geocine/phaser3-rollup-typescript#readme",
+	"devDependencies": {
+		"@rollup/plugin-replace": "^6.0.1",
+		"@types/node": "^22.7.4",
+		"@typescript-eslint/eslint-plugin": "^8.8.0",
+		"@typescript-eslint/parser": "^8.8.0",
+		"eslint": "^9.12.0",
+		"phaser": "^3.85.2",
+		"typescript": "^5.6.2",
+		"vite": "^5.4.8"
+	},
+	"packageManager": "yarn@3.3.1"
+}

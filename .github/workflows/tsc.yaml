@@ -1,0 +1,20 @@
+name: TypeScript Syntax Check
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  tsc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Install tsc
+      run: yarn
+
+    - name: Run tsc
+      run: tsc --noEmit

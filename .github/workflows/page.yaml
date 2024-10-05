@@ -36,8 +36,6 @@ jobs:
 
           tag="v${{github.run_number}}"
 
-          git tag "$tag"
-          git push --tags
           gh release create "$tag" --generate-notes
 
           npm run build

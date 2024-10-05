@@ -1,11 +1,17 @@
 import { WINDOW_CENTER, WINDOW_HEIGHT } from '@/config';
-import { ButtonType, createButton, type Button } from '@/things/button';
+import {
+  buttonMove,
+  createConveyorBeltItem,
+  ItemType,
+  type ConveyorBeltItem,
+} from '@/things/item';
 import { createGnome, type Gnome } from '@/things/gnome';
 import Phaser, { type Animations, type Textures } from 'phaser';
+import { remove } from 'lodash';
 
 export interface GameState {
   gnomes: Gnome[];
-  buttons: Button[];
+  conveyorBeltItems: ConveyorBeltItem[];
 }
 
 export interface GameAssets {
@@ -32,7 +38,7 @@ export default class PlayScreen extends Phaser.Scene {
     super('PlayScene');
     this.gameState = {
       gnomes: [],
-      buttons: [],
+      conveyorBeltItems: [],
     };
   }
 
@@ -104,26 +110,24 @@ export default class PlayScreen extends Phaser.Scene {
   }
 
   setupHotbar() {
-    const chickenButton = createButton(
+    const chickenButton = createConveyorBeltItem(
       this.gameAssets!,
       WINDOW_CENTER.x - 32 - 8,
       WINDOW_HEIGHT - 68,
       this.add,
-      ButtonType.Chicken,
-      () => {},
+      ItemType.Chicken,
     );
 
-    const mushroomButton = createButton(
+    const mushroomButton = createConveyorBeltItem(
       this.gameAssets!,
       WINDOW_CENTER.x + 32 - 8,
       WINDOW_HEIGHT - 68,
       this.add,
-      ButtonType.GreenMushroom,
-      () => {},
+      ItemType.GreenMushroom,
     );
 
-    this.gameState.buttons.push(chickenButton);
-    this.gameState.buttons.push(mushroomButton);
+    this.gameState.conveyorBeltItems.push(chickenButton);
+    this.gameState.conveyorBeltItems.push(mushroomButton);
   }
 
   create() {
@@ -131,6 +135,17 @@ export default class PlayScreen extends Phaser.Scene {
 
     this.spawnGnome();
 
-    this.setupHotbar([]);
+    this.setupHotbar();
+  }
+
+  override update(time: number, delta: number): void {
+    super.update(time, delta);
+    this.updateBelt(delta);
+  }
+
+  updateBelt(delta: number) {
+    remove(this.gameState.conveyorBeltItems, (b) => {
+      return buttonMove(b, delta);
+    });
   }
 }

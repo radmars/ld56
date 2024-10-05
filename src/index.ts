@@ -20,8 +20,6 @@ const config: Phaser.Types.Core.GameConfig = {
     },
 	scene: [] as Phaser.Scene[],
 };
-
-
 const urlParams = new URLSearchParams(window.location.search);
 const devMode = urlParams.get('dev') === 'true' ? true : false;
 

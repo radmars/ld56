@@ -1,6 +1,6 @@
 import { WINDOW_CENTER, WINDOW_HEIGHT } from '@/config';
 import {
-  buttonMove,
+  beltItemMove,
   createConveyorBeltItem,
   ItemType,
   type ConveyorBeltItem,
@@ -145,7 +145,7 @@ export default class PlayScreen extends Phaser.Scene {
 
   updateBelt(delta: number) {
     remove(this.gameState.conveyorBeltItems, (b) => {
-      return buttonMove(b, delta);
+      return beltItemMove(b, delta);
     });
   }
 }

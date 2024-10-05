@@ -1,6 +1,6 @@
 import { WINDOW_WIDTH } from '@/config';
 import type { GameAssets } from '@/scenes/PlayScene';
-import type { GameObjects, Textures } from 'phaser';
+import { Input, type GameObjects, type Textures } from 'phaser';
 
 export enum ItemType {
   Chicken,
@@ -41,6 +41,7 @@ export function createConveyorBeltItem(
   sprite.setInteractive();
 
   const item = add.sprite(x, y, getItemTypeIcon(itemType, assets), 0);
+  item.setInteractive({ draggable: true });
 
   const beltItem: ConveyorBeltItem = {
     sprite,
@@ -51,24 +52,43 @@ export function createConveyorBeltItem(
     },
   };
 
-  sprite.on('pointerover', () => toggleSelected(beltItem, assets));
-  sprite.on('pointerout', () => toggleSelected(beltItem, assets));
+  sprite.on(Input.Events.GAMEOBJECT_POINTER_OVER, () => {
+    return toggleSelected(beltItem, assets);
+  });
+  sprite.on(Input.Events.GAMEOBJECT_POINTER_OUT, () => {
+    return toggleSelected(beltItem, assets);
+  });
+
+  item.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
+    // Remove the item from the belt.
+    if (beltItem.item) {
+      beltItem.item = null;
+    }
+  });
+
+  item.on(
+    Input.Events.GAMEOBJECT_DRAG,
+    (_: Input.Pointer, dragX: number, dragY: number) => {
+      item.x = dragX;
+      item.y = dragY;
+    },
+  );
 
   return beltItem;
 }
 
-function toggleSelected(button: ConveyorBeltItem, assets: GameAssets) {
-  if (!button.selected) {
-    button.sprite.setTexture(assets.selectedButton.key);
-    button.selected = true;
+function toggleSelected(beltItem: ConveyorBeltItem, assets: GameAssets) {
+  if (!beltItem.selected) {
+    beltItem.sprite.setTexture(assets.selectedButton.key);
+    beltItem.selected = true;
   } else {
-    button.sprite.setTexture(assets.unselectedButton.key);
-    button.selected = false;
+    beltItem.sprite.setTexture(assets.unselectedButton.key);
+    beltItem.selected = false;
   }
 }
 
 /** @returns true if the thing should be removed */
-export function buttonMove(beltItem: ConveyorBeltItem, delta: number) {
+export function beltItemMove(beltItem: ConveyorBeltItem, delta: number) {
   beltItem.sprite.x += delta * 0.1;
   if (beltItem.item) {
     beltItem.item.sprite.x += delta * 0.1;

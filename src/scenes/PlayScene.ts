@@ -14,6 +14,7 @@ export interface GameAssets {
   chickenTexture: Textures.Texture;
   unselectedButton: Textures.Texture;
   selectedButton: Textures.Texture;
+  greenMushroomTexture: Textures.Texture;
 }
 
 const must = <T>(what: string, thing: T | false): T => {
@@ -56,6 +57,10 @@ export default class PlayScreen extends Phaser.Scene {
         frameHeight: 64,
       },
     );
+    this.load.spritesheet('mushroom', 'assets/game/mushroom.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
   }
 
   /**
@@ -65,6 +70,7 @@ export default class PlayScreen extends Phaser.Scene {
   setupAssets(): GameAssets {
     const gnomeTexture = this.textures.get('gnome');
     const chickenTexture = this.textures.get('chickenleg');
+    const greenMushroomTexture = this.textures.get('mushroom');
     const unselectedButton = this.textures.get('unselectedButton');
     const selectedButton = this.textures.get('selectedButton');
 
@@ -82,9 +88,10 @@ export default class PlayScreen extends Phaser.Scene {
     );
 
     return {
+      chickenTexture,
       gnomeTexture,
       gnomeWalkAnimation,
-      chickenTexture,
+      greenMushroomTexture,
       selectedButton,
       unselectedButton,
     };
@@ -96,17 +103,27 @@ export default class PlayScreen extends Phaser.Scene {
     );
   }
 
-  addButton(buttonType: ButtonType, callback: () => void) {
-    this.gameState.buttons.push(
-      createButton(
-        this.gameAssets!,
-        WINDOW_CENTER.x - 64,
-        WINDOW_HEIGHT - 68,
-        this.add,
-        buttonType,
-        callback,
-      ),
+  setupHotbar() {
+    const chickenButton = createButton(
+      this.gameAssets!,
+      WINDOW_CENTER.x - 32 - 8,
+      WINDOW_HEIGHT - 68,
+      this.add,
+      ButtonType.Chicken,
+      () => {},
     );
+
+    const mushroomButton = createButton(
+      this.gameAssets!,
+      WINDOW_CENTER.x + 32 - 8,
+      WINDOW_HEIGHT - 68,
+      this.add,
+      ButtonType.GreenMushroom,
+      () => {},
+    );
+
+    this.gameState.buttons.push(chickenButton);
+    this.gameState.buttons.push(mushroomButton);
   }
 
   create() {
@@ -114,8 +131,6 @@ export default class PlayScreen extends Phaser.Scene {
 
     this.spawnGnome();
 
-    this.addButton(ButtonType.Chicken, () => {
-      this.spawnGnome();
-    });
+    this.setupHotbar([]);
   }
 }

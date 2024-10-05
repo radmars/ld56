@@ -3,6 +3,7 @@ import type { GameObjects, Textures } from 'phaser';
 
 export enum ButtonType {
   Chicken,
+  GreenMushroom,
 }
 
 export interface Button {
@@ -18,6 +19,8 @@ function getButtonTypeIcon(
   switch (buttonType) {
     case ButtonType.Chicken:
       return assets.chickenTexture;
+    case ButtonType.GreenMushroom:
+      return assets.greenMushroomTexture;
   }
 }
 

@@ -26,7 +26,7 @@ export default class RadmarsScreen extends Phaser.Scene {
     ]);
   }
 
-  create(): void {
+  startInto() {
     this.anims.create({
       key: "glassesIdle",
       frames: [{ key: "glasses", frame: 0 }],
@@ -101,5 +101,17 @@ export default class RadmarsScreen extends Phaser.Scene {
     );
 
     this.cameras.main.fadeIn(1000);
+  }
+
+  create(): void {
+    const helloButton = this.add
+      .text(100, 100, "Click HERE to start", {
+        color: "#0f0",
+      })
+      .setInteractive()
+      .on("pointerup", () => {
+        this.startInto();
+        helloButton.destroy();
+      });
   }
 }

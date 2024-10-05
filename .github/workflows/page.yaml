@@ -40,15 +40,13 @@ jobs:
 
           npm run build
 
-          sed -i 's|/ld54-|./ld54-|g' dist/index.html
-
           touch dist/.nojekyll
 
-          mv dist ld54-${tag}
+          mv dist ld56-${tag}
 
-          zip -r ld54-${tag}.zip ld54-${tag}
+          zip -r ld56-${tag}.zip ld56-${tag}
 
-          gh release upload ${tag} ld54-${tag}.zip
+          gh release upload ${tag} ld56-${tag}.zip
 
           gh release edit ${tag} --draft=false
 

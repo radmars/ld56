@@ -15,6 +15,7 @@ export interface GameState {
 }
 
 export interface GameAssets {
+  backgroundTexture: Textures.Texture;
   gnomeWalkAnimation: Animations.Animation;
   gnomeTexture: Textures.Texture;
   chickenTexture: Textures.Texture;
@@ -43,6 +44,7 @@ export default class PlayScreen extends Phaser.Scene {
   }
 
   preload() {
+    this.load.image('bg', 'assets/game/bg.png');
     this.load.spritesheet('gnome', 'assets/game/gnome.png', {
       frameWidth: 64,
       frameHeight: 64,
@@ -74,6 +76,8 @@ export default class PlayScreen extends Phaser.Scene {
    * reference stuff without lame strings.
    */
   setupAssets(): GameAssets {
+    const backgroundTexture = this.textures.get('bg');
+
     const gnomeTexture = this.textures.get('gnome');
     const chickenTexture = this.textures.get('chickenleg');
     const greenMushroomTexture = this.textures.get('mushroom');
@@ -94,6 +98,7 @@ export default class PlayScreen extends Phaser.Scene {
     );
 
     return {
+      backgroundTexture,
       chickenTexture,
       gnomeTexture,
       gnomeWalkAnimation,
@@ -132,6 +137,8 @@ export default class PlayScreen extends Phaser.Scene {
 
   create() {
     this.gameAssets = this.setupAssets();
+
+    this.add.image(WINDOW_CENTER.x, WINDOW_CENTER.y, this.gameAssets.backgroundTexture).setScale(2);
 
     this.spawnGnome();
 

@@ -11,7 +11,6 @@
 		"eslint": "eslint ."
 	},
 	"author": "radmars",
-	"homepage": "https://github.com/geocine/phaser3-rollup-typescript#readme",
 	"devDependencies": {
 		"@eslint/eslintrc": "^3.1.0",
 		"@eslint/js": "^9.12.0",

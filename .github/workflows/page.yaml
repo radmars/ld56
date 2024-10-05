@@ -1,0 +1,67 @@
+
+name: Release
+
+permissions:
+  pull-requests: write
+  id-token: write
+  contents: write
+  pages: write
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  # Build and packages all the things
+  upload-artifacts:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+            lfs: 'true'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install things 
+        run: npm ci 
+
+      - name: Run build
+        run: |
+          set -ex
+
+          tag="v${{github.run_number}}"
+
+          git tag "$tag"
+          git push --tags
+          gh release create "$tag" --generate-notes
+
+          npm run build
+
+          sed -i 's|/ld54-|./ld54-|g' dist/index.html
+
+          touch dist/.nojekyll
+
+          mv dist ld54-${tag}
+
+          zip -r ld54-${tag}.zip ld54-${tag}
+
+          gh release upload ${tag} ld54-${tag}.zip
+
+          gh release edit ${tag} --draft=false
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ld56-v${{ github.run_number }}
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

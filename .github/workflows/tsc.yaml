@@ -13,7 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Install tsc
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Install things
       run: npm ci
 
     - name: Run tsc

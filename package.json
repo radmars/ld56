@@ -8,7 +8,8 @@
         "build": "vite build",
         "serve": "vite preview",
         "syntax": "tsc --noEmit",
-        "eslint": "eslint ."
+        "eslint": "eslint .",
+        "pretty": "prettier --write \"./**/*.{js,jsx,mjs,cjs,ts,tsx}\""
     },
     "author": "radmars",
     "devDependencies": {

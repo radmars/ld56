@@ -1,27 +1,27 @@
-import { Input, type GameObjects} from 'phaser';
+import { Input, type GameObjects } from 'phaser';
 
 export enum HatShape {
   basic,
   flop,
-  witch
+  witch,
 }
 
 export enum HatColor {
   red,
   blue,
-  gold
+  gold,
 }
 
 export enum HatDecoration {
   none,
   star,
-  moon
+  moon,
 }
 
 export interface Hat {
   shape: HatShape;
   color: HatColor;
-  decoration : HatDecoration;
+  decoration: HatDecoration;
   sprite: GameObjects.Sprite;
 }
 
@@ -31,20 +31,19 @@ export function createHat(
   add: GameObjects.GameObjectFactory,
   pShape: HatShape,
   pColor: HatColor,
-  pDecoration: HatDecoration
+  pDecoration: HatDecoration,
 ): Hat {
-  const sprite = add.sprite(x, y, "hat", 0);
+  const sprite = add.sprite(x, y, 'hat', 0);
   sprite.setInteractive();
 
   const hat: Hat = {
     sprite,
     shape: pShape,
     color: pColor,
-    decoration: pDecoration
+    decoration: pDecoration,
   };
 
-  sprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
-  });
+  sprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {});
 
   sprite.on(
     Input.Events.GAMEOBJECT_DRAG,

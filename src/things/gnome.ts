@@ -15,7 +15,7 @@ export interface Gnome {
   physicsObject: Physics.Matter.Sprite;
   grabbed: boolean;
   awake: boolean;
-  foodInTumTum: integer
+  foodInTumTum: integer;
 }
 
 // drag/throw
@@ -42,10 +42,10 @@ export function createGnome(
     physicsObject,
     grabbed: false,
     awake: true,
-    foodInTumTum: 0
+    foodInTumTum: 0,
   };
 
-  return gnome
+  return gnome;
 }
 
 export function updateGnome(gnome: Gnome, deltaTime: number): void {
@@ -56,7 +56,7 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
 
   gnome.actionDurationTracker -= deltaTime;
   if (gnome.actionDurationTracker <= 0) {
-    if(gnome.awake) {
+    if (gnome.awake) {
       if (gnome.speed > 0) {
         gnome.speed = 0;
         gnome.actionDurationTracker = pauseDuration;
@@ -66,9 +66,7 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
         //pick a new direction to walk
         gnome.heading.rotate(Phaser.Math.Between(0, 360));
       }
-    }
-    else
-    {
+    } else {
       awake(gnome);
     }
   }
@@ -82,17 +80,17 @@ export function grabGnome(gnome: Gnome) {
   gnome.grabbed = true;
 }
 
-export function feedGnome(gnome: Gnome) : boolean {
-  if(!gnome.awake) {
+export function feedGnome(gnome: Gnome): boolean {
+  if (!gnome.awake) {
     return false;
   }
 
-  gnome.foodInTumTum++
+  gnome.foodInTumTum++;
 
-  if(gnome.foodInTumTum >= poopThreshold) {
-    layHat(gnome)
+  if (gnome.foodInTumTum >= poopThreshold) {
+    layHat(gnome);
     //TODO if gnome is old, die otherwise sleep
-    sleep(gnome)
+    sleep(gnome);
     return true;
   }
 
@@ -101,20 +99,20 @@ export function feedGnome(gnome: Gnome) : boolean {
 
 export function layHat(gnome: Gnome) {
   //Do animation for pooping a hat
-  gnome.sprite.play("gnome-layHat");
-  gnome.sprite.chain("gnome-sleep")
+  gnome.sprite.play('gnome-layHat');
+  gnome.sprite.chain('gnome-sleep');
 }
 
 export function sleep(gnome: Gnome) {
   gnome.awake = false;
-  gnome.actionDurationTracker = sleepDuration
-  gnome.speed = 0
+  gnome.actionDurationTracker = sleepDuration;
+  gnome.speed = 0;
   gnome.foodInTumTum = 0;
 }
 
-export function awake(gnome:Gnome) {
-  gnome.sprite.play("gnome-walk");
+export function awake(gnome: Gnome) {
+  gnome.sprite.play('gnome-walk');
   gnome.awake = true;
-  gnome.actionDurationTracker = 0
+  gnome.actionDurationTracker = 0;
   gnome.foodInTumTum = 0;
 }

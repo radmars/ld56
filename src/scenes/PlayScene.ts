@@ -10,7 +10,13 @@ import {
 import Phaser, { Input, type Animations, type Textures } from 'phaser';
 import { createSellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
-import { createHat, Hat, HatColor, HatDecoration, HatShape } from '@/things/hat';
+import {
+  createHat,
+  Hat,
+  HatColor,
+  HatDecoration,
+  HatShape,
+} from '@/things/hat';
 
 export interface GameState {
   gnomes: Gnome[];
@@ -48,7 +54,7 @@ export default class PlayScreen extends Phaser.Scene {
     super('PlayScene');
     this.gameState = {
       gnomes: [],
-      hats: []
+      hats: [],
     };
   }
 
@@ -190,9 +196,16 @@ export default class PlayScreen extends Phaser.Scene {
         grabGnome(g);
 
         //TODO This ain't how ya feed em, but for now it is!
-        if(feedGnome(g)) {
+        if (feedGnome(g)) {
           //TODO Get the hat info from the gnome
-          createHat(g.sprite.x, g.sprite.y, this.add, HatShape.basic, HatColor.red, HatDecoration.none)
+          createHat(
+            g.sprite.x,
+            g.sprite.y,
+            this.add,
+            HatShape.basic,
+            HatColor.red,
+            HatDecoration.none,
+          );
         }
       }
     });

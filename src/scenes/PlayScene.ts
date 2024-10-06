@@ -5,20 +5,26 @@ import {
   grabGnome,
   ungrabGnome,
   type Gnome,
+  feedGnome,
 } from '@/things/gnome';
 import Phaser, { Input, type Animations, type Textures } from 'phaser';
 import { createSellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
+import { createHat, Hat, HatColor, HatDecoration, HatShape } from '@/things/hat';
 
 export interface GameState {
   gnomes: Gnome[];
+  hats: Hat[];
   belt?: Belt;
 }
 
 export interface GameAssets {
   backgroundTexture: Textures.Texture;
   gnomeWalkAnimation: Animations.Animation;
+  gnomeLayHatAnimation: Animations.Animation;
+  gnomeSleepAnimation: Animations.Animation;
   gnomeTexture: Textures.Texture;
+  hatTexture: Textures.Texture;
   chickenTexture: Textures.Texture;
   unselectedButton: Textures.Texture;
   selectedButton: Textures.Texture;
@@ -42,11 +48,13 @@ export default class PlayScreen extends Phaser.Scene {
     super('PlayScene');
     this.gameState = {
       gnomes: [],
+      hats: []
     };
   }
 
   preload() {
     this.load.image('bg', 'assets/game/bg.png');
+    this.load.image('hat', 'assets/game/hat.png');
     this.load.spritesheet('gnome', 'assets/game/gnome.png', {
       frameWidth: 64,
       frameHeight: 64,
@@ -91,6 +99,7 @@ export default class PlayScreen extends Phaser.Scene {
     const backgroundTexture = this.textures.get('bg');
 
     const gnomeTexture = this.textures.get('gnome');
+    const hatTexture = this.textures.get('hat');
     const chickenTexture = this.textures.get('chickenleg');
     const greenMushroomTexture = this.textures.get('mushroom');
     const unselectedButton = this.textures.get('unselectedButton');
@@ -111,11 +120,40 @@ export default class PlayScreen extends Phaser.Scene {
       }),
     );
 
+    const gnomeLayHatAnimation = must(
+      'load-gnome-layHat',
+      this.anims.create({
+        key: 'gnome-layHat',
+        frameRate: 10,
+        repeat: 0,
+        frames: this.anims.generateFrameNames(gnomeTexture.key, {
+          start: 5,
+          end: 7,
+        }),
+      }),
+    );
+
+    const gnomeSleepAnimation = must(
+      'load-gnome-sleep',
+      this.anims.create({
+        key: 'gnome-sleep',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeTexture.key, {
+          start: 8,
+          end: 10,
+        }),
+      }),
+    );
+
     return {
       backgroundTexture,
       chickenTexture,
       gnomeTexture,
+      hatTexture,
       gnomeWalkAnimation,
+      gnomeLayHatAnimation,
+      gnomeSleepAnimation,
       greenMushroomTexture,
       selectedButton,
       unselectedButton,
@@ -150,6 +188,12 @@ export default class PlayScreen extends Phaser.Scene {
       const g = this.gameState.gnomes.find((g) => body == g.physicsObject.body);
       if (g) {
         grabGnome(g);
+
+        //TODO This ain't how ya feed em, but for now it is!
+        if(feedGnome(g)) {
+          //TODO Get the hat info from the gnome
+          createHat(g.sprite.x, g.sprite.y, this.add, HatShape.basic, HatColor.red, HatDecoration.none)
+        }
       }
     });
 

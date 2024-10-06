@@ -50,6 +50,11 @@ export function createGnome(
 
 export function updateGnome(gnome: Gnome, deltaTime: number): void {
   if (gnome.speed > 0) {
+    if (gnome.heading.x > 0) {
+      gnome.sprite.flipX = true;
+    } else if (gnome.heading.x < 0) {
+      gnome.sprite.flipX = false;
+    }
     gnome.sprite.x += gnome.heading.x * gnome.speed * deltaTime;
     gnome.sprite.y += gnome.heading.y * gnome.speed * deltaTime;
   }

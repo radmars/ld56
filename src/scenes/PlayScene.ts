@@ -8,6 +8,7 @@ import {
 import { createGnome, type Gnome } from '@/things/gnome';
 import Phaser, { type Animations, type Textures } from 'phaser';
 import { remove } from 'lodash';
+import { createSellBox, type SellBox } from '@/things/sellbox';
 
 export interface GameState {
   gnomes: Gnome[];
@@ -22,6 +23,8 @@ export interface GameAssets {
   unselectedButton: Textures.Texture;
   selectedButton: Textures.Texture;
   greenMushroomTexture: Textures.Texture;
+  sellBoxTexture: Textures.Texture;
+  sellBoxHoverTexture: Textures.Texture;
 }
 
 const must = <T>(what: string, thing: T | false): T => {
@@ -69,6 +72,16 @@ export default class PlayScreen extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 64,
     });
+
+    this.load.spritesheet('sellbox', 'assets/game/sellbox.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+
+    this.load.spritesheet('sellbox-hover', 'assets/game/sellbox-hover.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
   }
 
   /**
@@ -83,6 +96,8 @@ export default class PlayScreen extends Phaser.Scene {
     const greenMushroomTexture = this.textures.get('mushroom');
     const unselectedButton = this.textures.get('unselectedButton');
     const selectedButton = this.textures.get('selectedButton');
+    const sellBoxTexture = this.textures.get('sellbox');
+    const sellBoxHoverTexture = this.textures.get('sellbox-hover');
 
     const gnomeWalkAnimation = must(
       'load-gnome-walk',
@@ -105,6 +120,8 @@ export default class PlayScreen extends Phaser.Scene {
       greenMushroomTexture,
       selectedButton,
       unselectedButton,
+      sellBoxHoverTexture,
+      sellBoxTexture,
     };
   }
 
@@ -114,13 +131,14 @@ export default class PlayScreen extends Phaser.Scene {
     );
   }
 
-  setupHotbar() {
+  setupHotbar(sellBox: SellBox) {
     const chickenButton = createConveyorBeltItem(
       this.gameAssets!,
       WINDOW_CENTER.x - 32 - 8,
       WINDOW_HEIGHT - 68,
       this.add,
       ItemType.Chicken,
+      sellBox,
     );
 
     const mushroomButton = createConveyorBeltItem(
@@ -129,6 +147,7 @@ export default class PlayScreen extends Phaser.Scene {
       WINDOW_HEIGHT - 68,
       this.add,
       ItemType.GreenMushroom,
+      sellBox,
     );
 
     this.gameState.conveyorBeltItems.push(chickenButton);
@@ -138,11 +157,18 @@ export default class PlayScreen extends Phaser.Scene {
   create() {
     this.gameAssets = this.setupAssets();
 
-    this.add.image(WINDOW_CENTER.x, WINDOW_CENTER.y, this.gameAssets.backgroundTexture).setScale(2);
+    this.add
+      .image(
+        WINDOW_CENTER.x,
+        WINDOW_CENTER.y,
+        this.gameAssets.backgroundTexture,
+      )
+      .setScale(2);
 
     this.spawnGnome();
+    const sellBox = createSellBox(this.gameAssets, 32, 32, this.add);
 
-    this.setupHotbar();
+    this.setupHotbar(sellBox);
   }
 
   override update(time: number, delta: number): void {

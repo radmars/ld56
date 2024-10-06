@@ -1,6 +1,7 @@
 import { WINDOW_WIDTH } from '@/config';
 import type { GameAssets } from '@/scenes/PlayScene';
 import { Input, type GameObjects, type Textures } from 'phaser';
+import type { SellBox } from './sellbox';
 
 export enum ItemType {
   Chicken,
@@ -36,6 +37,7 @@ export function createConveyorBeltItem(
   y: number,
   add: GameObjects.GameObjectFactory,
   itemType: ItemType,
+  sellBox: SellBox,
 ): ConveyorBeltItem {
   const sprite = add.sprite(x, y, assets.unselectedButton, 0);
   sprite.setInteractive();
@@ -71,6 +73,34 @@ export function createConveyorBeltItem(
     (_: Input.Pointer, dragX: number, dragY: number) => {
       item.x = dragX;
       item.y = dragY;
+    },
+  );
+
+  item.on(
+    Input.Events.GAMEOBJECT_DRAG_LEAVE,
+    (_: Input.Pointer, target: GameObjects.GameObject) => {
+      if (target == sellBox.zone) {
+        sellBox.hoverLeave();
+      }
+    },
+  );
+  item.on(
+    Input.Events.GAMEOBJECT_DRAG_ENTER,
+    (_: Input.Pointer, target: GameObjects.GameObject) => {
+      if (target == sellBox.zone) {
+        sellBox.hoverEnter();
+      }
+    },
+  );
+
+  // TODO: I dont think this is a mechanic.
+  item.on(
+    Input.Events.GAMEOBJECT_DROP,
+    (_: Input.Pointer, target: GameObjects.GameObject) => {
+      if (target == sellBox.zone) {
+        item.destroy();
+        sellBox.hoverLeave();
+      }
     },
   );
 

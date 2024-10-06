@@ -75,6 +75,7 @@ export function createConveyorBeltItem(
     // Remove the item from the belt.
     if (beltItem.item) {
       beltItem.item = null;
+      gameState.cash -= price;
     }
   });
 

@@ -1,4 +1,4 @@
-import { WINDOW_CENTER } from '@/config';
+import { WINDOW_CENTER, WINDOW_WIDTH } from '@/config';
 import {
   updateGnome,
   createGnome,
@@ -6,7 +6,13 @@ import {
   ungrabGnome,
   type Gnome,
 } from '@/things/gnome';
-import Phaser, { Input, Physics, type Animations, type Textures } from 'phaser';
+import Phaser, {
+  GameObjects,
+  Input,
+  Physics,
+  type Animations,
+  type Textures,
+} from 'phaser';
 import { createSellBox, SellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
 import { Hat } from '@/things/hat';
@@ -18,6 +24,11 @@ export interface GameState {
   sellBox?: SellBox;
   belt?: Belt;
   cash: number;
+  hud: HUD;
+}
+
+interface HUD {
+  cashText: GameObjects.Text;
 }
 
 export interface GameAssets {
@@ -55,6 +66,7 @@ export default class PlayScreen extends Phaser.Scene {
       gnomes: [],
       hats: [],
       cash: 20,
+      hud: {} as HUD, // plz ignore lies.
     };
   }
 
@@ -274,15 +286,39 @@ export default class PlayScreen extends Phaser.Scene {
     this.input.on(Input.Events.DROP, () => {
       pointer.active = true;
     });
+
+    const cashStr = getCashStr(this.gameState);
+    const cashText = this.add.text(WINDOW_WIDTH - 8, 8, cashStr);
+    cashText.setAlign('right');
+    cashText.setOrigin(1, 0);
+
+    this.gameState.hud = {
+      cashText,
+    };
+  }
+
+  updateHud() {
+    const cashStr = getCashStr(this.gameState);
+    this.gameState.hud.cashText.setText(cashStr);
   }
 
   override update(time: number, delta: number): void {
     super.update(time, delta);
     updateBelt(this.gameState.belt!, delta);
     updatePrices(this.gameState.belt!, this.gameState.cash);
+    this.updateHud();
 
     this.gameState.gnomes.forEach(function (gnome) {
       updateGnome(gnome, delta);
     }, this);
   }
+}
+
+function getCashStr(gameState: GameState): string {
+  return `You have $${gameState.cash} spend it wizely`;
+}
+
+/** This is absolutely not correct. Have fun. */
+export function textWidth(chars: string): number {
+  return 7 * chars.length;
 }

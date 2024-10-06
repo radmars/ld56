@@ -35,7 +35,7 @@ export function createHat(
   pDecoration: HatDecoration,
   gameState: GameState,
 ): Hat {
-  const sprite = add.sprite(x, y, 'hat', 0);
+  const sprite = add.sprite(x, y, 'hat', 4);
   sprite.setInteractive({ draggable: true });
 
   const hat: Hat = {

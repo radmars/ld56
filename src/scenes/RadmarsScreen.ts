@@ -7,7 +7,7 @@ export default class RadmarsScreen extends Phaser.Scene {
   }
 
   preload(): void {
-    this.load.image('bg', 'assets/intro/intro_bg.png');
+    this.load.image('intro_bg', 'assets/intro/intro_bg.png');
     this.load.image('mars', 'assets/intro/intro_mars.png');
 
     this.load.spritesheet('glasses', 'assets/intro/intro_glasses.png', {
@@ -52,7 +52,7 @@ export default class RadmarsScreen extends Phaser.Scene {
     const cx = WINDOW_CENTER.x;
     const cy = WINDOW_CENTER.y;
 
-    this.add.image(cx, cy, 'bg').setScale(2);
+    this.add.image(cx, cy, 'intro_bg').setScale(2);
     const radmarsGlasses = this.add
       .sprite(cx, WINDOW_HEIGHT / 6, 'glasses')
       .setScale(2);
@@ -96,7 +96,7 @@ export default class RadmarsScreen extends Phaser.Scene {
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
-        this.scene.start('TileScreen');
+        this.scene.start('PlayScene');
       },
     );
 
@@ -104,14 +104,18 @@ export default class RadmarsScreen extends Phaser.Scene {
   }
 
   create(): void {
-    const helloButton = this.add
-      .text(100, 100, 'Click HERE to start', {
+    if (this.sound.locked) {
+      const waitText = this.add.text(100, 100, 'Click to start', {
         color: '#0f0',
-      })
-      .setInteractive()
-      .on('pointerup', () => {
-        this.startInto();
-        helloButton.destroy();
+        fontSize: '23px',
       });
+
+      this.sound.once('unlocked', () => {
+        this.startInto();
+        waitText.destroy();
+      });
+    } else {
+      this.startInto();
+    }
   }
 }

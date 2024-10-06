@@ -116,7 +116,7 @@ export function feedGnome(
   add: GameObjects.GameObjectFactory,
 ) {
   if (!gnome.awake) {
-    return;
+    return false;
   }
   console.log(`Feeding ${gnome} a ${itemType}`);
 
@@ -136,6 +136,8 @@ export function feedGnome(
       gameState,
     );
   }
+
+  return true;
 }
 
 export function layHat(gnome: Gnome) {

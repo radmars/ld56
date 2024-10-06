@@ -22,7 +22,7 @@ export function createGnome(
   x: number,
   y: number,
   add: GameObjects.GameObjectFactory,
-  matter: Phaser.Physics.Matter.MatterPhysics,
+  matter: Physics.Matter.MatterPhysics,
 ): Gnome {
   const sprite = add.sprite(x, y, assets.gnomeTexture.key, 0);
   sprite.setInteractive();

@@ -1,11 +1,5 @@
 import { WINDOW_CENTER, WINDOW_HEIGHT } from '@/config';
 import {
-  beltItemMove,
-  createConveyorBeltItem,
-  ItemType,
-  type ConveyorBeltItem,
-} from '@/things/item';
-import {
   updateGnome,
   createGnome,
   grabGnome,
@@ -13,12 +7,12 @@ import {
   type Gnome,
 } from '@/things/gnome';
 import Phaser, { Input, type Animations, type Textures } from 'phaser';
-import { remove } from 'lodash';
 import { createSellBox, type SellBox } from '@/things/sellbox';
+import { createBelt, updateBelt } from '@/things/belt';
 
 export interface GameState {
   gnomes: Gnome[];
-  conveyorBeltItems: ConveyorBeltItem[];
+  belt: Belt;
 }
 
 export interface GameAssets {
@@ -143,29 +137,6 @@ export default class PlayScreen extends Phaser.Scene {
     );
   }
 
-  setupHotbar(sellBox: SellBox) {
-    const chickenButton = createConveyorBeltItem(
-      this.gameAssets!,
-      WINDOW_CENTER.x - 32 - 8,
-      WINDOW_HEIGHT - 68,
-      this.add,
-      ItemType.Chicken,
-      sellBox,
-    );
-
-    const mushroomButton = createConveyorBeltItem(
-      this.gameAssets!,
-      WINDOW_CENTER.x + 32 - 8,
-      WINDOW_HEIGHT - 68,
-      this.add,
-      ItemType.GreenMushroom,
-      sellBox,
-    );
-
-    this.gameState.conveyorBeltItems.push(chickenButton);
-    this.gameState.conveyorBeltItems.push(mushroomButton);
-  }
-
   create() {
     this.gameAssets = this.setupAssets();
     this.matter.world.setBounds();
@@ -200,22 +171,20 @@ export default class PlayScreen extends Phaser.Scene {
 
     this.spawnGnome();
     const sellBox = createSellBox(this.gameAssets, 32, 32, this.add);
-
-    this.setupHotbar(sellBox);
+    this.gameState.belt = createBelt(
+      this.add,
+      this.gameAssets,
+      this.time,
+      sellBox,
+    );
   }
 
   override update(time: number, delta: number): void {
     super.update(time, delta);
-    this.updateBelt(delta);
+    updateBelt(this.gameState.belt, delta);
 
     this.gameState.gnomes.forEach(function (gnome) {
       updateGnome(gnome, delta);
     }, this);
-  }
-
-  updateBelt(delta: number) {
-    remove(this.gameState.conveyorBeltItems, (b) => {
-      return beltItemMove(b, delta);
-    });
   }
 }

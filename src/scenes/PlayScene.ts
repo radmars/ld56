@@ -5,8 +5,14 @@ import {
   ItemType,
   type ConveyorBeltItem,
 } from '@/things/item';
-import { createGnome, Gnome, updateGnome } from '@/things/gnome';
-import Phaser, { type Animations, type Textures } from 'phaser';
+import {
+  updateGnome,
+  createGnome,
+  grabGnome,
+  ungrabGnome,
+  type Gnome,
+} from '@/things/gnome';
+import Phaser, { Input, type Animations, type Textures } from 'phaser';
 import { remove } from 'lodash';
 import { createSellBox, type SellBox } from '@/things/sellbox';
 
@@ -127,7 +133,13 @@ export default class PlayScreen extends Phaser.Scene {
 
   spawnGnome() {
     this.gameState.gnomes.push(
-      createGnome(this.gameAssets!, WINDOW_CENTER.x, WINDOW_CENTER.y, this.add),
+      createGnome(
+        this.gameAssets!,
+        WINDOW_CENTER.x,
+        WINDOW_CENTER.y,
+        this.add,
+        this.matter,
+      ),
     );
   }
 
@@ -156,6 +168,27 @@ export default class PlayScreen extends Phaser.Scene {
 
   create() {
     this.gameAssets = this.setupAssets();
+    this.matter.world.setBounds();
+
+    this.matter.add.pointerConstraint({
+      length: 30,
+      stiffness: 0.16,
+      damping: 0.1,
+    });
+
+    this.matter.world.on(Input.Events.DRAG_START, (body: MatterJS.BodyType) => {
+      const g = this.gameState.gnomes.find((g) => body == g.physicsObject.body);
+      if (g) {
+        grabGnome(g);
+      }
+    });
+
+    this.matter.world.on(Input.Events.DRAG_END, (body: MatterJS.BodyType) => {
+      const g = this.gameState.gnomes.find((g) => body == g.physicsObject.body);
+      if (g) {
+        ungrabGnome(g);
+      }
+    });
 
     this.add
       .image(
@@ -175,8 +208,8 @@ export default class PlayScreen extends Phaser.Scene {
     super.update(time, delta);
     this.updateBelt(delta);
 
-    this.gameState.gnomes.forEach(function(gnome) {
-      updateGnome(gnome, delta)
+    this.gameState.gnomes.forEach(function (gnome) {
+      updateGnome(gnome, delta);
     }, this);
   }
 

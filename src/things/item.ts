@@ -2,6 +2,7 @@ import { WINDOW_WIDTH } from '@/config';
 import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import { Input, type GameObjects, type Textures } from 'phaser';
 import { feedGnome, GnomeZone } from './gnome';
+import { Belt } from './belt';
 
 export enum ItemType {
   Chicken,
@@ -12,6 +13,17 @@ export interface ConveyorBeltItem {
   sprite: GameObjects.Sprite;
   /** null if it has been dragged away */
   item: Item | null;
+  price: number;
+  text: GameObjects.Text;
+}
+
+function getItemPrice(itemType: ItemType): number {
+  switch (itemType) {
+    case ItemType.Chicken:
+      return 1;
+    case ItemType.GreenMushroom:
+      return 2;
+  }
 }
 
 function getItemTypeIcon(
@@ -39,10 +51,13 @@ export function createConveyorBeltItem(
   itemType: ItemType,
 ): ConveyorBeltItem {
   const sprite = add.sprite(x, y, assets.unselectedButton, 0);
-  sprite.setInteractive();
 
   const itemSprite = add.sprite(x, y, getItemTypeIcon(itemType, assets), 0);
   itemSprite.setInteractive({ draggable: true });
+
+  const price = getItemPrice(itemType);
+
+  const text = add.text(x - 7 * (1 + Math.log10(price)), y + 32, `$${price}`);
 
   const item: Item = {
     sprite: itemSprite,
@@ -52,6 +67,8 @@ export function createConveyorBeltItem(
   const beltItem: ConveyorBeltItem = {
     sprite,
     item,
+    text,
+    price,
   };
 
   itemSprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
@@ -86,19 +103,39 @@ export function createConveyorBeltItem(
   return beltItem;
 }
 
+export function updatePrices(belt: Belt, cash: number) {
+  for (const item of belt.items) {
+    if (!item.item) {
+      item.text.setColor('rgb(120, 120, 120)');
+    } else if (item.price > cash) {
+      item.text.setColor('rgb(255,0,0)');
+      item.item.sprite.disableInteractive();
+    } else {
+      item.text.setColor('rgb(0,255,0)');
+      item.item.sprite.setInteractive();
+    }
+  }
+}
+
+function cleanupBeltItem(beltItem: ConveyorBeltItem) {
+  // Could make it go poof or something
+  beltItem.sprite.destroy();
+  if (beltItem.item) {
+    beltItem.item.sprite.destroy();
+  }
+  beltItem.text.destroy();
+}
+
 /** @returns true if the thing should be removed */
 export function beltItemMove(beltItem: ConveyorBeltItem, delta: number) {
   beltItem.sprite.x += delta * 0.1;
   if (beltItem.item) {
     beltItem.item.sprite.x += delta * 0.1;
   }
+  beltItem.text.x += delta * 0.1;
 
   if (beltItem.sprite.x > WINDOW_WIDTH) {
-    // Could make it go poof or something
-    beltItem.sprite.destroy();
-    if (beltItem.item) {
-      beltItem.item.sprite.destroy();
-    }
+    cleanupBeltItem(beltItem);
     return true;
   }
   return false;

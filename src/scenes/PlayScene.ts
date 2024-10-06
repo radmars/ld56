@@ -232,7 +232,15 @@ export default class PlayScreen extends Phaser.Scene {
 
   spawnGnome(x: number, y: number) {
     this.gameState.gnomes.push(
-      createGnome(this.gameAssets!, x, y, this.add, this.matter, this),
+      createGnome(
+        this.gameAssets!,
+        x,
+        y,
+        this.add,
+        this.matter,
+        this.time,
+        this,
+      ),
     );
   }
 
@@ -324,6 +332,9 @@ export default class PlayScreen extends Phaser.Scene {
     updatePrices(this.gameState.belt!, this.gameState.cash);
     this.updateHud();
 
+    this.gameState.gnomes = this.gameState.gnomes.filter((g) => {
+      return !g.awaitingReaper;
+    });
     this.gameState.gnomes.forEach(function (gnome) {
       updateGnome(gnome, delta);
     }, this);

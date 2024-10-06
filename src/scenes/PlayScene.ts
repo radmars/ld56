@@ -15,8 +15,14 @@ import Phaser, {
 } from 'phaser';
 import { createSellBox, SellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
-import { Hat } from '@/things/hat';
 import { updatePrices } from '@/things/item';
+import {
+  createHat,
+  Hat,
+  HatColor,
+  HatDecoration,
+  HatShape,
+} from '@/things/hat';
 
 export interface GameState {
   gnomes: Gnome[];
@@ -224,14 +230,24 @@ export default class PlayScreen extends Phaser.Scene {
     };
   }
 
-  spawnGnome() {
+  spawnGnome(x: number, y: number) {
     this.gameState.gnomes.push(
-      createGnome(
-        this.gameAssets!,
-        WINDOW_CENTER.x,
-        WINDOW_CENTER.y,
+      createGnome(this.gameAssets!, x, y, this.add, this.matter, this),
+    );
+  }
+
+  //TODO This should take in shape, coor, decoration from the calling context
+  spawnHat(x: number, y: number) {
+    this.gameState.hats.push(
+      createHat(
+        x,
+        y,
         this.add,
-        this.matter,
+        HatShape.basic,
+        HatColor.red,
+        HatDecoration.none,
+        this.gameState,
+        this,
       ),
     );
   }
@@ -268,7 +284,7 @@ export default class PlayScreen extends Phaser.Scene {
       )
       .setScale(2);
 
-    this.spawnGnome();
+    this.spawnGnome(WINDOW_CENTER.x, WINDOW_CENTER.y);
     this.gameState.sellBox = createSellBox(this.gameAssets, 32, 32, this.add);
     this.gameState.belt = createBelt(
       this.gameState,

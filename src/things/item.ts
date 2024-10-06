@@ -94,9 +94,8 @@ export function createConveyorBeltItem(
           return g.zone == target;
         });
         if (g) {
-          if (feedGnome(g, gameState, item.itemType, add)) {
-            item.sprite.destroy();
-          }
+          feedGnome(g, gameState, item.itemType);
+          item.sprite.destroy();
         }
       }
     },

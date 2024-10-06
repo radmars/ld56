@@ -1,7 +1,7 @@
 import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import { type GameObjects, type Physics } from 'phaser';
 import { ItemType } from '@/things//item';
-import { createHat, HatColor, HatDecoration, HatShape } from '@/things/hat';
+import PlayScene from '@/scenes/PlayScene';
 
 const walkDuration: number = 1000;
 const pauseDuration: number = 1500;
@@ -23,6 +23,7 @@ export interface Gnome {
   awake: boolean;
   foodInTumTum: integer;
   zone: GameObjects.Zone;
+  playScene: PlayScene;
 }
 
 // drag/throw
@@ -34,6 +35,7 @@ export function createGnome(
   y: number,
   add: GameObjects.GameObjectFactory,
   matter: Physics.Matter.MatterPhysics,
+  pPlayscene: PlayScene,
 ): Gnome {
   const body = add.sprite(0, 0, assets.gnomeBodyTexture.key);
   const hat = add.image(0, -19, assets.hatTexture.key, 0);
@@ -62,6 +64,7 @@ export function createGnome(
     awake: true,
     foodInTumTum: 0,
     zone,
+    playScene: pPlayscene,
   };
 
   return gnome;
@@ -113,7 +116,6 @@ export function feedGnome(
   gnome: Gnome,
   gameState: GameState,
   itemType: ItemType,
-  add: GameObjects.GameObjectFactory,
 ) {
   if (!gnome.awake) {
     return false;
@@ -126,15 +128,7 @@ export function feedGnome(
     layHat(gnome);
     //TODO if gnome is old, die otherwise sleep
     sleep(gnome);
-    createHat(
-      gnome.container.x,
-      gnome.container.y,
-      add,
-      HatShape.basic,
-      HatColor.red,
-      HatDecoration.none,
-      gameState,
-    );
+    gnome.playScene.spawnHat(gnome.container.x, gnome.container.y);
   }
 
   return true;

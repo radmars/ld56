@@ -1,5 +1,5 @@
 import { Input, type GameObjects } from 'phaser';
-import { GameState } from '@/scenes/PlayScene';
+import PlayScene, { GameState } from '@/scenes/PlayScene';
 
 export enum HatShape {
   basic,
@@ -19,11 +19,14 @@ export enum HatDecoration {
   moon,
 }
 
+export const HatZone = 'TheHatZone';
+
 export interface Hat {
   shape: HatShape;
   color: HatColor;
   decoration: HatDecoration;
   sprite: GameObjects.Sprite;
+  zone: GameObjects.Zone;
 }
 
 export function createHat(
@@ -34,15 +37,21 @@ export function createHat(
   pColor: HatColor,
   pDecoration: HatDecoration,
   gameState: GameState,
+  playScene: PlayScene,
 ): Hat {
-  const sprite = add.sprite(x, y, 'hat', 4);
+  const sprite = add.sprite(x, y, playScene.gameAssets!.hatTexture, 4);
   sprite.setInteractive({ draggable: true });
+
+  const zone = add.zone(x, y, 32, 32).setRectangleDropZone(32, 32);
+  zone.setName(HatZone);
+  zone.setInteractive(false);
 
   const hat: Hat = {
     sprite,
     shape: pShape,
     color: pColor,
     decoration: pDecoration,
+    zone,
   };
 
   sprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {});
@@ -76,6 +85,18 @@ export function createHat(
       if (target == gameState.sellBox?.zone) {
         gameState.sellBox?.hoverLeave();
         sprite.destroy();
+      } else if (target.name == HatZone) {
+        const h = gameState.hats.find((h) => {
+          return h.zone == target;
+        });
+        if (h) {
+          //Do had seggs
+          //TODO some sort of hat breeding animation/payoff before spawning gnome?
+
+          h.sprite.destroy();
+          sprite.destroy();
+          playScene.spawnGnome(h.sprite.x, h.sprite.y);
+        }
       }
     },
   );

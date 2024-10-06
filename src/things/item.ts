@@ -10,7 +10,6 @@ export enum ItemType {
 
 export interface ConveyorBeltItem {
   sprite: GameObjects.Sprite;
-  selected: boolean;
   /** null if it has been dragged away */
   item: Item | null;
 }
@@ -47,19 +46,11 @@ export function createConveyorBeltItem(
 
   const beltItem: ConveyorBeltItem = {
     sprite,
-    selected: false,
     item: {
       sprite: item,
       itemType,
     },
   };
-
-  sprite.on(Input.Events.GAMEOBJECT_POINTER_OVER, () => {
-    return toggleSelected(beltItem, assets);
-  });
-  sprite.on(Input.Events.GAMEOBJECT_POINTER_OUT, () => {
-    return toggleSelected(beltItem, assets);
-  });
 
   item.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
     // Remove the item from the belt.
@@ -93,10 +84,10 @@ export function createConveyorBeltItem(
     },
   );
 
-  // TODO: I dont think this is a mechanic.
   item.on(
     Input.Events.GAMEOBJECT_DROP,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
+      // TODO: I dont think this is a mechanic.
       if (target == sellBox.zone) {
         item.destroy();
         sellBox.hoverLeave();
@@ -105,16 +96,6 @@ export function createConveyorBeltItem(
   );
 
   return beltItem;
-}
-
-function toggleSelected(beltItem: ConveyorBeltItem, assets: GameAssets) {
-  if (!beltItem.selected) {
-    beltItem.sprite.setTexture(assets.selectedButton.key);
-    beltItem.selected = true;
-  } else {
-    beltItem.sprite.setTexture(assets.unselectedButton.key);
-    beltItem.selected = false;
-  }
 }
 
 /** @returns true if the thing should be removed */

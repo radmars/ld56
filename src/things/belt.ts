@@ -1,4 +1,4 @@
-import { Time, type GameObjects } from 'phaser';
+import { Physics, Time, type GameObjects } from 'phaser';
 import {
   beltItemMove,
   createConveyorBeltItem,
@@ -24,6 +24,7 @@ export function createBelt(
   assets: GameAssets,
   time: Time.Clock,
   sellBox: SellBox,
+  pointer: Physics.Matter.PointerConstraint,
 ) {
   const belt: Belt = {
     items: [],
@@ -39,6 +40,7 @@ export function createBelt(
             add,
             getRandomItemType(),
             sellBox,
+            pointer,
           ),
         );
       },

@@ -7,7 +7,7 @@ import {
   type Gnome,
   feedGnome,
 } from '@/things/gnome';
-import Phaser, { Input, type Animations, type Textures } from 'phaser';
+import Phaser, { Input, Physics, type Animations, type Textures } from 'phaser';
 import { createSellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
 import {
@@ -184,11 +184,11 @@ export default class PlayScreen extends Phaser.Scene {
     this.gameAssets = this.setupAssets();
     this.matter.world.setBounds();
 
-    this.matter.add.pointerConstraint({
+    const pointer = this.matter.add.pointerConstraint({
       length: 30,
       stiffness: 0.16,
       damping: 0.1,
-    });
+    }) as unknown as Physics.Matter.PointerConstraint;
 
     this.matter.world.on(Input.Events.DRAG_START, (body: MatterJS.BodyType) => {
       const g = this.gameState.gnomes.find((g) => body == g.physicsObject.body);
@@ -232,6 +232,7 @@ export default class PlayScreen extends Phaser.Scene {
       this.gameAssets,
       this.time,
       sellBox,
+      pointer,
     );
   }
 

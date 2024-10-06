@@ -1,6 +1,6 @@
 import { WINDOW_WIDTH } from '@/config';
 import type { GameAssets } from '@/scenes/PlayScene';
-import { Input, type GameObjects, type Textures } from 'phaser';
+import { Input, Physics, type GameObjects, type Textures } from 'phaser';
 import type { SellBox } from './sellbox';
 
 export enum ItemType {
@@ -37,6 +37,7 @@ export function createConveyorBeltItem(
   add: GameObjects.GameObjectFactory,
   itemType: ItemType,
   sellBox: SellBox,
+  pointer: Physics.Matter.PointerConstraint,
 ): ConveyorBeltItem {
   const sprite = add.sprite(x, y, assets.unselectedButton, 0);
   sprite.setInteractive();
@@ -54,6 +55,7 @@ export function createConveyorBeltItem(
 
   item.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
     // Remove the item from the belt.
+    pointer.active = false;
     if (beltItem.item) {
       beltItem.item = null;
     }
@@ -83,6 +85,9 @@ export function createConveyorBeltItem(
       }
     },
   );
+  item.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
+    pointer.active = true;
+  });
 
   item.on(
     Input.Events.GAMEOBJECT_DROP,

@@ -1,4 +1,4 @@
-import { Physics, Time, type GameObjects } from 'phaser';
+import { Time, type GameObjects } from 'phaser';
 import {
   beltItemMove,
   createConveyorBeltItem,
@@ -6,8 +6,7 @@ import {
   type ConveyorBeltItem,
 } from '@/things/item';
 import { remove, sample } from 'lodash';
-import type { SellBox } from './sellbox';
-import type { GameAssets } from '@/scenes/PlayScene';
+import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import { WINDOW_HEIGHT } from '@/config';
 
 export interface Belt {
@@ -20,11 +19,10 @@ function getRandomItemType(): ItemType {
 }
 
 export function createBelt(
+  gameState: GameState,
   add: GameObjects.GameObjectFactory,
   assets: GameAssets,
   time: Time.Clock,
-  sellBox: SellBox,
-  pointer: Physics.Matter.PointerConstraint,
 ) {
   const belt: Belt = {
     items: [],
@@ -34,13 +32,12 @@ export function createBelt(
       callback: function () {
         belt.items.push(
           createConveyorBeltItem(
+            gameState,
             assets,
             0,
             WINDOW_HEIGHT - 68,
             add,
             getRandomItemType(),
-            sellBox,
-            pointer,
           ),
         );
       },

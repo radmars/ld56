@@ -1,4 +1,5 @@
 import { Input, type GameObjects } from 'phaser';
+import { GameState } from '@/scenes/PlayScene';
 
 export enum HatShape {
   basic,
@@ -32,9 +33,10 @@ export function createHat(
   pShape: HatShape,
   pColor: HatColor,
   pDecoration: HatDecoration,
+  gameState: GameState,
 ): Hat {
   const sprite = add.sprite(x, y, 'hat', 0);
-  sprite.setInteractive();
+  sprite.setInteractive({ draggable: true });
 
   const hat: Hat = {
     sprite,
@@ -50,6 +52,31 @@ export function createHat(
     (_: Input.Pointer, dragX: number, dragY: number) => {
       sprite.x = dragX;
       sprite.y = dragY;
+    },
+  );
+  sprite.on(
+    Input.Events.GAMEOBJECT_DRAG_LEAVE,
+    (_: Input.Pointer, target: GameObjects.GameObject) => {
+      if (target == gameState.sellBox?.zone) {
+        gameState.sellBox.hoverLeave();
+      }
+    },
+  );
+  sprite.on(
+    Input.Events.GAMEOBJECT_DRAG_ENTER,
+    (_: Input.Pointer, target: GameObjects.GameObject) => {
+      if (target == gameState.sellBox?.zone) {
+        gameState.sellBox.hoverEnter();
+      }
+    },
+  );
+  sprite.on(
+    Input.Events.GAMEOBJECT_DROP,
+    (_: Input.Pointer, target: GameObjects.GameObject) => {
+      if (target == gameState.sellBox?.zone) {
+        gameState.sellBox?.hoverLeave();
+        sprite.destroy();
+      }
     },
   );
 

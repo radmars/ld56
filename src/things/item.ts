@@ -1,9 +1,7 @@
 import { WINDOW_WIDTH } from '@/config';
-import type { GameAssets } from '@/scenes/PlayScene';
-import { Input, Physics, type GameObjects, type Textures } from 'phaser';
-import type { SellBox } from '@/things/sellbox';
-
-export const ItemDataKey = 'ITEM_DATA';
+import type { GameAssets, GameState } from '@/scenes/PlayScene';
+import { Input, type GameObjects, type Textures } from 'phaser';
+import { feedGnome, GnomeZone } from './gnome';
 
 export enum ItemType {
   Chicken,
@@ -33,13 +31,12 @@ export interface Item {
 }
 
 export function createConveyorBeltItem(
+  gameState: GameState,
   assets: GameAssets,
   x: number,
   y: number,
   add: GameObjects.GameObjectFactory,
   itemType: ItemType,
-  sellBox: SellBox,
-  pointer: Physics.Matter.PointerConstraint,
 ): ConveyorBeltItem {
   const sprite = add.sprite(x, y, assets.unselectedButton, 0);
   sprite.setInteractive();
@@ -47,19 +44,18 @@ export function createConveyorBeltItem(
   const itemSprite = add.sprite(x, y, getItemTypeIcon(itemType, assets), 0);
   itemSprite.setInteractive({ draggable: true });
 
-  const beltItem: ConveyorBeltItem = {
-    sprite,
-    item: {
-      sprite: itemSprite,
-      itemType,
-    },
+  const item: Item = {
+    sprite: itemSprite,
+    itemType,
   };
 
-  itemSprite.setData(ItemDataKey, beltItem.item);
+  const beltItem: ConveyorBeltItem = {
+    sprite,
+    item,
+  };
 
   itemSprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
     // Remove the item from the belt.
-    pointer.active = false;
     if (beltItem.item) {
       beltItem.item = null;
     }
@@ -72,28 +68,20 @@ export function createConveyorBeltItem(
       itemSprite.y = dragY;
     },
   );
-
-  // TODO: The belongs to hats, not items!
   itemSprite.on(
-    Input.Events.GAMEOBJECT_DRAG_LEAVE,
+    Input.Events.GAMEOBJECT_DROP,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
-      if (target == sellBox.zone) {
-        sellBox.hoverLeave();
+      if (target.name == GnomeZone) {
+        const g = gameState.gnomes.find((g) => {
+          return g.zone == target;
+        });
+        if (g) {
+          feedGnome(g, gameState, item.itemType, add);
+          item.sprite.destroy();
+        }
       }
     },
   );
-  // TODO: The belongs to hats, not items!
-  itemSprite.on(
-    Input.Events.GAMEOBJECT_DRAG_ENTER,
-    (_: Input.Pointer, target: GameObjects.GameObject) => {
-      if (target == sellBox.zone) {
-        sellBox.hoverEnter();
-      }
-    },
-  );
-  itemSprite.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
-    pointer.active = true;
-  });
 
   return beltItem;
 }

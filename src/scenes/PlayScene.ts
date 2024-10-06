@@ -5,24 +5,16 @@ import {
   grabGnome,
   ungrabGnome,
   type Gnome,
-  GnomeZone,
-  feedGnome,
 } from '@/things/gnome';
-import Phaser, {
-  GameObjects,
-  Input,
-  Physics,
-  type Animations,
-  type Textures,
-} from 'phaser';
+import Phaser, { Input, Physics, type Animations, type Textures } from 'phaser';
 import { createSellBox, SellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
 import { Hat } from '@/things/hat';
-import { Item, ItemDataKey } from '@/things/item';
 
 export interface GameState {
   gnomes: Gnome[];
   hats: Hat[];
+  sellBox?: SellBox;
   belt?: Belt;
 }
 
@@ -215,19 +207,23 @@ export default class PlayScreen extends Phaser.Scene {
       .setScale(2);
 
     this.spawnGnome();
-    const sellBox = createSellBox(this.gameAssets, 32, 32, this.add);
+    this.gameState.sellBox = createSellBox(this.gameAssets, 32, 32, this.add);
     this.gameState.belt = createBelt(
+      this.gameState,
       this.add,
       this.gameAssets,
       this.time,
-      sellBox,
-      pointer,
     );
 
-    this.input.on(
-      Input.Events.DROP,
-      dropHandler(this.gameState, this.add, pointer, sellBox),
-    );
+    this.input.on(Input.Events.DRAG_START, () => {
+      pointer.active = false;
+    });
+    this.input.on(Input.Events.DRAG_END, () => {
+      pointer.active = true;
+    });
+    this.input.on(Input.Events.DROP, () => {
+      pointer.active = true;
+    });
   }
 
   override update(time: number, delta: number): void {
@@ -238,36 +234,4 @@ export default class PlayScreen extends Phaser.Scene {
       updateGnome(gnome, delta);
     }, this);
   }
-}
-
-function dropHandler(
-  gameState: GameState,
-  add: GameObjects.GameObjectFactory,
-  pointer: Physics.Matter.PointerConstraint,
-  sellBox: SellBox,
-) {
-  return (
-    _: Input.Pointer,
-    itemObj: GameObjects.GameObject,
-    target: GameObjects.GameObject,
-  ) => {
-    // NOTE: The item here is _ASSUMED_ to a belt item, but that could break if we add other dropables.
-    const item = itemObj.getData(ItemDataKey) as Item;
-
-    pointer.active = true;
-    if (target == sellBox.zone) {
-      item.sprite.destroy();
-      sellBox.hoverLeave();
-    }
-
-    if (target.name == GnomeZone) {
-      const g = gameState.gnomes.find((g) => {
-        return g.zone == target;
-      });
-      if (g) {
-        feedGnome(g, item.itemType, add);
-        item.sprite.destroy();
-      }
-    }
-  };
 }

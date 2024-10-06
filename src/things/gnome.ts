@@ -1,4 +1,4 @@
-import type { GameAssets } from '@/scenes/PlayScene';
+import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import { type GameObjects, type Physics } from 'phaser';
 import { ItemType } from '@/things//item';
 import { createHat, HatColor, HatDecoration, HatShape } from '@/things/hat';
@@ -100,6 +100,7 @@ export function grabGnome(gnome: Gnome) {
 
 export function feedGnome(
   gnome: Gnome,
+  gameState: GameState,
   itemType: ItemType,
   add: GameObjects.GameObjectFactory,
 ) {
@@ -121,6 +122,7 @@ export function feedGnome(
       HatShape.basic,
       HatColor.red,
       HatDecoration.none,
+      gameState,
     );
   }
 }

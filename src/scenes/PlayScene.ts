@@ -20,17 +20,20 @@ export interface GameState {
 
 export interface GameAssets {
   backgroundTexture: Textures.Texture;
-  gnomeWalkAnimation: Animations.Animation;
-  gnomeLayHatAnimation: Animations.Animation;
-  gnomeSleepAnimation: Animations.Animation;
-  gnomeTexture: Textures.Texture;
-  hatTexture: Textures.Texture;
-  chickenTexture: Textures.Texture;
   unselectedButton: Textures.Texture;
   selectedButton: Textures.Texture;
-  greenMushroomTexture: Textures.Texture;
   sellBoxTexture: Textures.Texture;
   sellBoxHoverTexture: Textures.Texture;
+  gnomeBodyTexture: Textures.Texture;
+  hatTexture: Textures.Texture;
+  chickenTexture: Textures.Texture;
+  greenMushroomTexture: Textures.Texture;
+  gnomeYoungWalkAnimation: Animations.Animation;
+  gnomeYoungLayHatAnimation: Animations.Animation;
+  gnomeYoungSleepAnimation: Animations.Animation;
+  gnomeOldWalkAnimation: Animations.Animation;
+  gnomeOldLayHatAnimation: Animations.Animation;
+  gnomeOldSleepAnimation: Animations.Animation;
 }
 
 const must = <T>(what: string, thing: T | false): T => {
@@ -54,10 +57,13 @@ export default class PlayScreen extends Phaser.Scene {
 
   preload() {
     this.load.image('bg', 'assets/game/bg.png');
-    this.load.image('hat', 'assets/game/hat.png');
-    this.load.spritesheet('gnome', 'assets/game/gnome.png', {
-      frameWidth: 64,
-      frameHeight: 64,
+    this.load.spritesheet('gnome-body', 'assets/game/gnome-body.png', {
+      frameWidth: 32,
+      frameHeight: 32,
+    });
+    this.load.spritesheet('hat', 'assets/game/hat.png', {
+      frameWidth: 32,
+      frameHeight: 32,
     });
     this.load.spritesheet('chickenleg', 'assets/game/chicken.png', {
       frameWidth: 64,
@@ -97,8 +103,7 @@ export default class PlayScreen extends Phaser.Scene {
    */
   setupAssets(): GameAssets {
     const backgroundTexture = this.textures.get('bg');
-
-    const gnomeTexture = this.textures.get('gnome');
+    const gnomeBodyTexture = this.textures.get('gnome-body');
     const hatTexture = this.textures.get('hat');
     const chickenTexture = this.textures.get('chickenleg');
     const greenMushroomTexture = this.textures.get('mushroom');
@@ -107,58 +112,100 @@ export default class PlayScreen extends Phaser.Scene {
     const sellBoxTexture = this.textures.get('sellbox');
     const sellBoxHoverTexture = this.textures.get('sellbox-hover');
 
-    const gnomeWalkAnimation = must(
-      'load-gnome-walk',
+    const gnomeYoungWalkAnimation = must(
+      'load-gnome-young-walk',
       this.anims.create({
-        key: 'gnome-walk',
+        key: 'gnome-young-walk',
         frameRate: 10,
         repeat: -1,
-        frames: this.anims.generateFrameNames(gnomeTexture.key, {
-          start: 0,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 2,
           end: 3,
         }),
       }),
     );
 
-    const gnomeLayHatAnimation = must(
-      'load-gnome-layHat',
+    const gnomeOldWalkAnimation = must(
+      'load-gnome-old-walk',
       this.anims.create({
-        key: 'gnome-layHat',
+        key: 'gnome-old-walk',
         frameRate: 10,
-        repeat: 0,
-        frames: this.anims.generateFrameNames(gnomeTexture.key, {
-          start: 5,
-          end: 7,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 0,
+          end: 1,
         }),
       }),
     );
 
-    const gnomeSleepAnimation = must(
-      'load-gnome-sleep',
+    const gnomeYoungLayHatAnimation = must(
+      'load-gnome-young-lay-hat',
       this.anims.create({
-        key: 'gnome-sleep',
+        key: 'gnome-young-lay-hat',
         frameRate: 10,
-        repeat: -1,
-        frames: this.anims.generateFrameNames(gnomeTexture.key, {
-          start: 8,
-          end: 10,
+        repeat: 0,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 2,
+          end: 3,
+        }),
+      }),
+    );
+
+    const gnomeOldLayHatAnimation = must(
+      'load-gnome-old-lay-hat',
+      this.anims.create({
+        key: 'gnome-old-lay-hat',
+        frameRate: 10,
+        repeat: 0,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 0,
+          end: 1,
+        }),
+      }),
+    );
+
+    const gnomeYoungSleepAnimation = must(
+      'load-gnome-young-sleep',
+      this.anims.create({
+        key: 'gnome-young-sleep',
+        frameRate: 10,
+        repeat: 0,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 2,
+          end: 3,
+        }),
+      }),
+    );
+
+    const gnomeOldSleepAnimation = must(
+      'load-gnome-old-sleep',
+      this.anims.create({
+        key: 'gnome-old-sleep',
+        frameRate: 10,
+        repeat: 0,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 0,
+          end: 1,
         }),
       }),
     );
 
     return {
       backgroundTexture,
-      chickenTexture,
-      gnomeTexture,
-      hatTexture,
-      gnomeWalkAnimation,
-      gnomeLayHatAnimation,
-      gnomeSleepAnimation,
-      greenMushroomTexture,
-      selectedButton,
       unselectedButton,
-      sellBoxHoverTexture,
+      selectedButton,
       sellBoxTexture,
+      sellBoxHoverTexture,
+      gnomeBodyTexture,
+      hatTexture,
+      chickenTexture,
+      greenMushroomTexture,
+      gnomeYoungWalkAnimation,
+      gnomeOldWalkAnimation,
+      gnomeYoungLayHatAnimation,
+      gnomeOldLayHatAnimation,
+      gnomeYoungSleepAnimation,
+      gnomeOldSleepAnimation,
     };
   }
 
@@ -185,14 +232,14 @@ export default class PlayScreen extends Phaser.Scene {
     }) as unknown as Physics.Matter.PointerConstraint;
 
     this.matter.world.on(Input.Events.DRAG_START, (body: MatterJS.BodyType) => {
-      const g = this.gameState.gnomes.find((g) => body == g.physicsObject.body);
+      const g = this.gameState.gnomes.find((g) => body == g.physics.body);
       if (g) {
         grabGnome(g);
       }
     });
 
     this.matter.world.on(Input.Events.DRAG_END, (body: MatterJS.BodyType) => {
-      const g = this.gameState.gnomes.find((g) => body == g.physicsObject.body);
+      const g = this.gameState.gnomes.find((g) => body == g.physics.body);
       if (g) {
         ungrabGnome(g);
       }

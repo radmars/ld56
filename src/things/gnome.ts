@@ -12,11 +12,13 @@ const poopThreshold: integer = 3;
 export const GnomeZone = 'TheGnomeZone';
 
 export interface Gnome {
-  sprite: GameObjects.Sprite;
+  container: GameObjects.Container;
+  body: GameObjects.Sprite;
+  hat: GameObjects.Image;
   heading: Phaser.Math.Vector2;
   speed: number;
   actionDurationTracker: number;
-  physicsObject: Physics.Matter.Sprite;
+  physics: Physics.Matter.Sprite;
   grabbed: boolean;
   awake: boolean;
   foodInTumTum: integer;
@@ -33,22 +35,29 @@ export function createGnome(
   add: GameObjects.GameObjectFactory,
   matter: Physics.Matter.MatterPhysics,
 ): Gnome {
-  const sprite = add.sprite(x, y, assets.gnomeTexture.key, 0);
-  sprite.setInteractive();
-  sprite.play(assets.gnomeWalkAnimation);
+  const body = add.sprite(0, 0, assets.gnomeBodyTexture.key);
+  const hat = add.image(0, -19, assets.hatTexture.key, 0);
+
+  const container = add.container(x, y, [body, hat]);
+  container.setSize(32, 32);
+  // container.setInteractive();
+
+  const physics = matter.add.gameObject(container) as Physics.Matter.Sprite;
+  physics.setBounce(0.1);
+
+  body.play(assets.gnomeYoungWalkAnimation);
 
   const zone = add.zone(x, y, 64, 64).setRectangleDropZone(64, 64);
   zone.setName(GnomeZone);
 
-  const physicsObject = matter.add.gameObject(sprite) as Physics.Matter.Sprite;
-  physicsObject.setBounce(0.1);
-
   const gnome = {
-    sprite,
+    container,
+    body,
+    hat,
     heading: new Phaser.Math.Vector2(1, 0),
     speed: 0,
     actionDurationTracker: 0,
-    physicsObject,
+    physics: physics,
     grabbed: false,
     awake: true,
     foodInTumTum: 0,
@@ -61,12 +70,14 @@ export function createGnome(
 export function updateGnome(gnome: Gnome, deltaTime: number): void {
   if (gnome.speed > 0) {
     if (gnome.heading.x > 0) {
-      gnome.sprite.flipX = true;
+      gnome.body.flipX = false;
+      gnome.hat.flipX = false;
     } else if (gnome.heading.x < 0) {
-      gnome.sprite.flipX = false;
+      gnome.body.flipX = true;
+      gnome.hat.flipX = true;
     }
-    gnome.sprite.x += gnome.heading.x * gnome.speed * deltaTime;
-    gnome.sprite.y += gnome.heading.y * gnome.speed * deltaTime;
+    gnome.container.x += gnome.heading.x * gnome.speed * deltaTime;
+    gnome.container.y += gnome.heading.y * gnome.speed * deltaTime;
   }
 
   gnome.actionDurationTracker -= deltaTime;
@@ -86,8 +97,8 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
     }
   }
 
-  gnome.zone.x = gnome.sprite.x;
-  gnome.zone.y = gnome.sprite.y;
+  gnome.zone.x = gnome.container.x;
+  gnome.zone.y = gnome.container.y;
 }
 
 export function ungrabGnome(gnome: Gnome) {
@@ -116,8 +127,8 @@ export function feedGnome(
     //TODO if gnome is old, die otherwise sleep
     sleep(gnome);
     createHat(
-      gnome.sprite.x,
-      gnome.sprite.y,
+      gnome.container.x,
+      gnome.container.y,
       add,
       HatShape.basic,
       HatColor.red,
@@ -129,8 +140,8 @@ export function feedGnome(
 
 export function layHat(gnome: Gnome) {
   //Do animation for pooping a hat
-  gnome.sprite.play('gnome-layHat');
-  gnome.sprite.chain('gnome-sleep');
+  gnome.body.play('gnome-young-lay-hat');
+  gnome.body.chain('gnome-young-sleep');
 }
 
 export function sleep(gnome: Gnome) {
@@ -141,7 +152,7 @@ export function sleep(gnome: Gnome) {
 }
 
 export function awake(gnome: Gnome) {
-  gnome.sprite.play('gnome-walk');
+  gnome.body.play('gnome-young-walk');
   gnome.awake = true;
   gnome.actionDurationTracker = 0;
   gnome.foodInTumTum = 0;

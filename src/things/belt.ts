@@ -8,9 +8,9 @@ import {
 import { remove, sample } from 'lodash';
 import type { SellBox } from './sellbox';
 import type { GameAssets } from '@/scenes/PlayScene';
-import { WINDOW_CENTER, WINDOW_HEIGHT } from '@/config';
+import { WINDOW_HEIGHT } from '@/config';
 
-interface Belt {
+export interface Belt {
   items: ConveyorBeltItem[];
   spawnTimer: Time.TimerEvent;
 }

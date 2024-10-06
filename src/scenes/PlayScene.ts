@@ -1,4 +1,4 @@
-import { WINDOW_CENTER, WINDOW_HEIGHT } from '@/config';
+import { WINDOW_CENTER } from '@/config';
 import {
   updateGnome,
   createGnome,
@@ -7,12 +7,12 @@ import {
   type Gnome,
 } from '@/things/gnome';
 import Phaser, { Input, type Animations, type Textures } from 'phaser';
-import { createSellBox, type SellBox } from '@/things/sellbox';
-import { createBelt, updateBelt } from '@/things/belt';
+import { createSellBox } from '@/things/sellbox';
+import { createBelt, updateBelt, type Belt } from '@/things/belt';
 
 export interface GameState {
   gnomes: Gnome[];
-  belt: Belt;
+  belt?: Belt;
 }
 
 export interface GameAssets {
@@ -42,7 +42,6 @@ export default class PlayScreen extends Phaser.Scene {
     super('PlayScene');
     this.gameState = {
       gnomes: [],
-      conveyorBeltItems: [],
     };
   }
 
@@ -181,7 +180,7 @@ export default class PlayScreen extends Phaser.Scene {
 
   override update(time: number, delta: number): void {
     super.update(time, delta);
-    updateBelt(this.gameState.belt, delta);
+    updateBelt(this.gameState.belt!, delta);
 
     this.gameState.gnomes.forEach(function (gnome) {
       updateGnome(gnome, delta);

@@ -5,7 +5,7 @@ import {
   ItemType,
   type ConveyorBeltItem,
 } from '@/things/item';
-import { createGnome, type Gnome } from '@/things/gnome';
+import { createGnome, Gnome, updateGnome } from '@/things/gnome';
 import Phaser, { type Animations, type Textures } from 'phaser';
 import { remove } from 'lodash';
 import { createSellBox, type SellBox } from '@/things/sellbox';
@@ -174,6 +174,10 @@ export default class PlayScreen extends Phaser.Scene {
   override update(time: number, delta: number): void {
     super.update(time, delta);
     this.updateBelt(delta);
+
+    this.gameState.gnomes.forEach(function(gnome) {
+      updateGnome(gnome, delta)
+    }, this);
   }
 
   updateBelt(delta: number) {

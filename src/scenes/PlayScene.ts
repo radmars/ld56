@@ -10,12 +10,14 @@ import Phaser, { Input, Physics, type Animations, type Textures } from 'phaser';
 import { createSellBox, SellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
 import { Hat } from '@/things/hat';
+import { updatePrices } from '@/things/item';
 
 export interface GameState {
   gnomes: Gnome[];
   hats: Hat[];
   sellBox?: SellBox;
   belt?: Belt;
+  cash: number;
 }
 
 export interface GameAssets {
@@ -52,6 +54,7 @@ export default class PlayScreen extends Phaser.Scene {
     this.gameState = {
       gnomes: [],
       hats: [],
+      cash: 20,
     };
   }
 
@@ -276,6 +279,7 @@ export default class PlayScreen extends Phaser.Scene {
   override update(time: number, delta: number): void {
     super.update(time, delta);
     updateBelt(this.gameState.belt!, delta);
+    updatePrices(this.gameState.belt!, this.gameState.cash);
 
     this.gameState.gnomes.forEach(function (gnome) {
       updateGnome(gnome, delta);

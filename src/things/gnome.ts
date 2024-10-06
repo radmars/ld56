@@ -1,11 +1,15 @@
 import type { GameAssets } from '@/scenes/PlayScene';
 import { type GameObjects, type Physics } from 'phaser';
+import { ItemType } from '@/things//item';
+import { createHat, HatColor, HatDecoration, HatShape } from '@/things/hat';
 
 const walkDuration: number = 1000;
 const pauseDuration: number = 1500;
 const sleepDuration: number = 10000;
 const walkSpeed: number = 0.05;
 const poopThreshold: integer = 3;
+
+export const GnomeZone = 'TheGnomeZone';
 
 export interface Gnome {
   sprite: GameObjects.Sprite;
@@ -16,6 +20,7 @@ export interface Gnome {
   grabbed: boolean;
   awake: boolean;
   foodInTumTum: integer;
+  zone: GameObjects.Zone;
 }
 
 // drag/throw
@@ -31,6 +36,10 @@ export function createGnome(
   const sprite = add.sprite(x, y, assets.gnomeTexture.key, 0);
   sprite.setInteractive();
   sprite.play(assets.gnomeWalkAnimation);
+
+  const zone = add.zone(x, y, 64, 64).setRectangleDropZone(64, 64);
+  zone.setName(GnomeZone);
+
   const physicsObject = matter.add.gameObject(sprite) as Physics.Matter.Sprite;
   physicsObject.setBounce(0.1);
 
@@ -43,6 +52,7 @@ export function createGnome(
     grabbed: false,
     awake: true,
     foodInTumTum: 0,
+    zone,
   };
 
   return gnome;
@@ -75,6 +85,9 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
       awake(gnome);
     }
   }
+
+  gnome.zone.x = gnome.sprite.x;
+  gnome.zone.y = gnome.sprite.y;
 }
 
 export function ungrabGnome(gnome: Gnome) {
@@ -85,10 +98,15 @@ export function grabGnome(gnome: Gnome) {
   gnome.grabbed = true;
 }
 
-export function feedGnome(gnome: Gnome): boolean {
+export function feedGnome(
+  gnome: Gnome,
+  itemType: ItemType,
+  add: GameObjects.GameObjectFactory,
+) {
   if (!gnome.awake) {
-    return false;
+    return;
   }
+  console.log(`Feeding ${gnome} a ${itemType}`);
 
   gnome.foodInTumTum++;
 
@@ -96,10 +114,15 @@ export function feedGnome(gnome: Gnome): boolean {
     layHat(gnome);
     //TODO if gnome is old, die otherwise sleep
     sleep(gnome);
-    return true;
+    createHat(
+      gnome.sprite.x,
+      gnome.sprite.y,
+      add,
+      HatShape.basic,
+      HatColor.red,
+      HatDecoration.none,
+    );
   }
-
-  return false;
 }
 
 export function layHat(gnome: Gnome) {

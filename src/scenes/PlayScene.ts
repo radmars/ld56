@@ -5,18 +5,20 @@ import {
   grabGnome,
   ungrabGnome,
   type Gnome,
+  GnomeZone,
   feedGnome,
 } from '@/things/gnome';
-import Phaser, { Input, Physics, type Animations, type Textures } from 'phaser';
-import { createSellBox } from '@/things/sellbox';
+import Phaser, {
+  GameObjects,
+  Input,
+  Physics,
+  type Animations,
+  type Textures,
+} from 'phaser';
+import { createSellBox, SellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
-import {
-  createHat,
-  Hat,
-  HatColor,
-  HatDecoration,
-  HatShape,
-} from '@/things/hat';
+import { Hat } from '@/things/hat';
+import { Item, ItemDataKey } from '@/things/item';
 
 export interface GameState {
   gnomes: Gnome[];
@@ -194,19 +196,6 @@ export default class PlayScreen extends Phaser.Scene {
       const g = this.gameState.gnomes.find((g) => body == g.physicsObject.body);
       if (g) {
         grabGnome(g);
-
-        //TODO This ain't how ya feed em, but for now it is!
-        if (feedGnome(g)) {
-          //TODO Get the hat info from the gnome
-          createHat(
-            g.sprite.x,
-            g.sprite.y,
-            this.add,
-            HatShape.basic,
-            HatColor.red,
-            HatDecoration.none,
-          );
-        }
       }
     });
 
@@ -234,6 +223,11 @@ export default class PlayScreen extends Phaser.Scene {
       sellBox,
       pointer,
     );
+
+    this.input.on(
+      Input.Events.DROP,
+      dropHandler(this.gameState, this.add, pointer, sellBox),
+    );
   }
 
   override update(time: number, delta: number): void {
@@ -244,4 +238,36 @@ export default class PlayScreen extends Phaser.Scene {
       updateGnome(gnome, delta);
     }, this);
   }
+}
+
+function dropHandler(
+  gameState: GameState,
+  add: GameObjects.GameObjectFactory,
+  pointer: Physics.Matter.PointerConstraint,
+  sellBox: SellBox,
+) {
+  return (
+    _: Input.Pointer,
+    itemObj: GameObjects.GameObject,
+    target: GameObjects.GameObject,
+  ) => {
+    // NOTE: The item here is _ASSUMED_ to a belt item, but that could break if we add other dropables.
+    const item = itemObj.getData(ItemDataKey) as Item;
+
+    pointer.active = true;
+    if (target == sellBox.zone) {
+      item.sprite.destroy();
+      sellBox.hoverLeave();
+    }
+
+    if (target.name == GnomeZone) {
+      const g = gameState.gnomes.find((g) => {
+        return g.zone == target;
+      });
+      if (g) {
+        feedGnome(g, item.itemType, add);
+        item.sprite.destroy();
+      }
+    }
+  };
 }

@@ -1,7 +1,9 @@
 import { WINDOW_WIDTH } from '@/config';
 import type { GameAssets } from '@/scenes/PlayScene';
 import { Input, Physics, type GameObjects, type Textures } from 'phaser';
-import type { SellBox } from './sellbox';
+import type { SellBox } from '@/things/sellbox';
+
+export const ItemDataKey = 'ITEM_DATA';
 
 export enum ItemType {
   Chicken,
@@ -42,18 +44,20 @@ export function createConveyorBeltItem(
   const sprite = add.sprite(x, y, assets.unselectedButton, 0);
   sprite.setInteractive();
 
-  const item = add.sprite(x, y, getItemTypeIcon(itemType, assets), 0);
-  item.setInteractive({ draggable: true });
+  const itemSprite = add.sprite(x, y, getItemTypeIcon(itemType, assets), 0);
+  itemSprite.setInteractive({ draggable: true });
 
   const beltItem: ConveyorBeltItem = {
     sprite,
     item: {
-      sprite: item,
+      sprite: itemSprite,
       itemType,
     },
   };
 
-  item.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
+  itemSprite.setData(ItemDataKey, beltItem.item);
+
+  itemSprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
     // Remove the item from the belt.
     pointer.active = false;
     if (beltItem.item) {
@@ -61,15 +65,16 @@ export function createConveyorBeltItem(
     }
   });
 
-  item.on(
+  itemSprite.on(
     Input.Events.GAMEOBJECT_DRAG,
     (_: Input.Pointer, dragX: number, dragY: number) => {
-      item.x = dragX;
-      item.y = dragY;
+      itemSprite.x = dragX;
+      itemSprite.y = dragY;
     },
   );
 
-  item.on(
+  // TODO: The belongs to hats, not items!
+  itemSprite.on(
     Input.Events.GAMEOBJECT_DRAG_LEAVE,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
       if (target == sellBox.zone) {
@@ -77,7 +82,8 @@ export function createConveyorBeltItem(
       }
     },
   );
-  item.on(
+  // TODO: The belongs to hats, not items!
+  itemSprite.on(
     Input.Events.GAMEOBJECT_DRAG_ENTER,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
       if (target == sellBox.zone) {
@@ -85,20 +91,9 @@ export function createConveyorBeltItem(
       }
     },
   );
-  item.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
+  itemSprite.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
     pointer.active = true;
   });
-
-  item.on(
-    Input.Events.GAMEOBJECT_DROP,
-    (_: Input.Pointer, target: GameObjects.GameObject) => {
-      // TODO: I dont think this is a mechanic.
-      if (target == sellBox.zone) {
-        item.destroy();
-        sellBox.hoverLeave();
-      }
-    },
-  );
 
   return beltItem;
 }

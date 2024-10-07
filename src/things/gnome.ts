@@ -149,6 +149,10 @@ export function createGnome(
 export function updateGnome(gnome: Gnome, deltaTime: number): void {
   gnome.age += deltaTime;
 
+  if (!gnome.awake) {
+    return;
+  }
+
   if (gnome.speed > 0) {
     if (gnome.heading.x > 0) {
       gnome.body.flipX = false;
@@ -185,25 +189,23 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
     gnome.container.setPosition(newX, newY);
   }
 
-  if (gnome.awake) {
-    gnome.actionDurationTracker -= deltaTime;
+  gnome.actionDurationTracker -= deltaTime;
 
-    if (gnome.actionDurationTracker <= 0) {
-      if (gnome.speed > 0) {
-        gnome.speed = 0;
-        gnome.actionDurationTracker = pauseDuration;
-        gnome.body.play('gnome-idle' + ageSuffix(gnome.age));
-      } else {
-        gnome.speed = walkSpeed;
-        if (gnome.age > oldAge) {
-          gnome.speed /= 2;
-        }
-
-        gnome.actionDurationTracker = walkDuration;
-        // Pick a new direction to walk
-        gnome.heading.rotate(Phaser.Math.Between(0, 360));
-        gnome.body.play('gnome-walk' + ageSuffix(gnome.age));
+  if (gnome.actionDurationTracker <= 0) {
+    if (gnome.speed > 0) {
+      gnome.speed = 0;
+      gnome.actionDurationTracker = pauseDuration;
+      gnome.body.play('gnome-idle' + ageSuffix(gnome.age));
+    } else {
+      gnome.speed = walkSpeed;
+      if (gnome.age > oldAge) {
+        gnome.speed /= 2;
       }
+
+      gnome.actionDurationTracker = walkDuration;
+      // Pick a new direction to walk
+      gnome.heading.rotate(Phaser.Math.Between(0, 360));
+      gnome.body.play('gnome-walk' + ageSuffix(gnome.age));
     }
   }
 
@@ -245,7 +247,6 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
 
 export function layHat(gnome: Gnome) {
   gnome.awake = false;
-  gnome.speed = 0;
   gnome.foodInTumTum = 0;
 
   gnome.playScene.sound.play('hatpop');
@@ -334,14 +335,25 @@ function becomeOld(g: Gnome) {
   }
 }
 
+// We may want to use an object pool for this
 function becomeDead(g: Gnome) {
-  // We may want to use an object pool for this
-  g.body.destroy();
-  g.hat.destroy();
-  g.container.destroy();
-  g.zone.destroy();
-  g.awaitingReaper = true;
-  g.playScene.sound.play('die');
+  g.awake = false; // Alas, this is forever
+  g.body.play('gnome-die');
+  g.hat.setVisible(false);
+  g.hatDecoration.setVisible(false);
+
+  g.body.once(
+    Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'gnome-die',
+    () => {
+      g.body.destroy();
+      g.hat.destroy();
+      g.container.destroy();
+      g.zone.destroy();
+
+      g.awaitingReaper = true;
+      g.playScene.sound.play('die');
+    },
+  );
 }
 
 // case ItemType.Birdbath:

@@ -66,6 +66,7 @@ export interface GameAssets {
   gnomeOldWalkAnimation: Animations.Animation;
   gnomeOldLayHatAnimation: Animations.Animation;
   gnomeOldSleepAnimation: Animations.Animation;
+  gnomeDieAnimation: Animations.Animation;
 }
 
 const must = <T>(what: string, thing: T | false): T => {
@@ -471,6 +472,18 @@ export default class PlayScreen extends Phaser.Scene {
       }),
     );
 
+    const gnomeDieAnimation = must(
+      'load-gnome-die',
+      this.anims.create({
+        key: 'gnome-die',
+        frameRate: 10,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 21,
+          end: 46,
+        }),
+      }),
+    );
+
     return {
       backgroundTexture,
       unselectedButton,
@@ -499,6 +512,7 @@ export default class PlayScreen extends Phaser.Scene {
       gnomeOldWalkAnimation,
       gnomeOldLayHatAnimation,
       gnomeOldSleepAnimation,
+      gnomeDieAnimation,
       mooncookieTexture,
       eraserTexture,
       trafficConeTexture,

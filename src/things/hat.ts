@@ -116,7 +116,8 @@ export function createHat(
     (_: Input.Pointer, target: GameObjects.GameObject) => {
       console.log(`Dropping hat on `, target.name);
       if (target == gameState.sellBox?.zone) {
-        gameState.cash += 50;
+        gameState.cash +=
+          25 * (hat.shape + 1) * (hat.color + 1) * (hat.decoration + 1);
         gameState.sellBox?.hoverLeave();
         destroyHatAndEverythingItStandsFor(hat);
         playScene.sound.play('sell');

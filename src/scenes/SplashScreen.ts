@@ -12,6 +12,11 @@ export default class SplashScreen extends Phaser.Scene {
       'splash-screen-text',
       'assets/intro/splash-screen-text.png',
     );
+
+    this.load.audio('industrial', [
+      'assets/audio/industrial.m4a',
+      'assets/audio/industrial.ogg',
+    ]);
   }
 
   create(): void {
@@ -31,6 +36,7 @@ export default class SplashScreen extends Phaser.Scene {
     this.time.addEvent(toggleText);
 
     this.cameras.main.fadeIn(1000);
+    this.sound.play('industrial', { volume: 0.5 });
 
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_IN_COMPLETE,
@@ -46,6 +52,7 @@ export default class SplashScreen extends Phaser.Scene {
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
+        this.sound.stopByKey('industrial');
         this.scene.start('PlayScene');
       },
     );

@@ -1,5 +1,5 @@
 // https://phaser.io/examples/v3.85.0/input/zones/view/circular-drop-zone
-import type { GameAssets, GameState } from '@/scenes/PlayScene';
+import type { GameState } from '@/scenes/PlayScene';
 import { Physics, type GameObjects } from 'phaser';
 import {
   compareHat,
@@ -20,7 +20,6 @@ const boxCenterX = 112;
 const boxCenterY = 84;
 
 export function createSellBox(
-  assets: GameAssets,
   add: GameObjects.GameObjectFactory,
   physics: Physics.Arcade.ArcadePhysics,
   gameState: GameState,

@@ -361,11 +361,12 @@ export default class PlayScreen extends Phaser.Scene {
       }
     });
 
-    this.add.image(
+    const bg = this.add.image(
       WINDOW_CENTER.x,
       WINDOW_CENTER.y,
       this.gameAssets.backgroundTexture,
     );
+    bg.depth = -2;
 
     this.spawnGnome(WINDOW_CENTER.x, WINDOW_CENTER.y);
     this.gameState.sellBox = createSellBox(this.gameAssets, 32, 32, this.add);

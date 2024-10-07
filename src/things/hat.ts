@@ -76,7 +76,10 @@ export function createHat(
 
   physics.add.existing(container);
   const body = container.body as Physics.Arcade.Body;
-  body.setVelocity(vx, vy).setDrag(Math.abs(vx), Math.abs(vy));
+  body
+    .setVelocity(vx, vy)
+    .setDrag(Math.abs(vx), Math.abs(vy))
+    .setCollideWorldBounds(true, 1, 1, true);
 
   const hat: Hat = {
     shape: pShape,

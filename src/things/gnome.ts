@@ -182,12 +182,15 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
       break;
     case ItemType.PhilStone:
       gnome.colorGene = HatColor.c;
+      gnome.playScene.sound.play('magic');
       break;
     case ItemType.Wand:
       gnome.decorationGene = HatDecoration.c;
+      gnome.playScene.sound.play('magic');
       break;
     case ItemType.Potion:
       gnome.shapeGene = HatShape.c;
+      gnome.playScene.sound.play('magic');
       break;
   }
 

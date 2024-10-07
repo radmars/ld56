@@ -70,13 +70,13 @@ function updateHat(gnome: Gnome) {
     2 - gnome.decorationGene,
   );
   switch (gnome.colorGene) {
-    case HatColor.a:
+    case HatColor.Red:
       gnome.hat.setTint(0xdc3333);
       break;
-    case HatColor.b:
+    case HatColor.Blue:
       gnome.hat.setTint(0x5b6ee1);
       break;
-    case HatColor.c:
+    case HatColor.Gold:
       gnome.hat.setTint(0xffd700);
       break;
   }
@@ -223,33 +223,33 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
   // Apply mutations
   switch (itemType) {
     case ItemType.Mushroom:
-      gnome.colorGene = HatColor.a;
+      gnome.colorGene = HatColor.Red;
       break;
     case ItemType.Eraser:
-      gnome.decorationGene = HatDecoration.a;
+      gnome.decorationGene = HatDecoration.None;
       break;
     case ItemType.TrafficCone:
-      gnome.shapeGene = HatShape.a;
+      gnome.shapeGene = HatShape.Cone;
       break;
     case ItemType.Birdbath:
-      gnome.colorGene = HatColor.b;
+      gnome.colorGene = HatColor.Blue;
       break;
     case ItemType.MoonCookie:
-      gnome.decorationGene = HatDecoration.b;
+      gnome.decorationGene = HatDecoration.Moon;
       break;
     case ItemType.Rock:
-      gnome.shapeGene = HatShape.b;
+      gnome.shapeGene = HatShape.Floppy;
       break;
     case ItemType.PhilStone:
-      gnome.colorGene = HatColor.c;
+      gnome.colorGene = HatColor.Gold;
       gnome.playScene.sound.play('magic');
       break;
     case ItemType.Wand:
-      gnome.decorationGene = HatDecoration.c;
+      gnome.decorationGene = HatDecoration.Star;
       gnome.playScene.sound.play('magic');
       break;
     case ItemType.Potion:
-      gnome.shapeGene = HatShape.c;
+      gnome.shapeGene = HatShape.Wizard;
       gnome.playScene.sound.play('magic');
       break;
   }

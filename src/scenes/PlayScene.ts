@@ -572,9 +572,9 @@ export default class PlayScreen extends Phaser.Scene {
     this.spawnGnome(
       WINDOW_CENTER.x,
       WINDOW_CENTER.y,
-      HatShape.a,
-      HatColor.a,
-      HatDecoration.a,
+      HatShape.Cone,
+      HatColor.Red,
+      HatDecoration.None,
     );
     this.gameState.sellBox = createSellBox(
       this.gameAssets,

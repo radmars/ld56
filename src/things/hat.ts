@@ -3,21 +3,21 @@ import PlayScene, { GameState } from '@/scenes/PlayScene';
 import { sellHat } from './sellbox';
 
 export enum HatShape {
-  a,
-  b,
-  c,
+  Cone,
+  Floppy,
+  Wizard,
 }
 
 export enum HatColor {
-  a,
-  b,
-  c,
+  Red,
+  Blue,
+  Gold,
 }
 
 export enum HatDecoration {
-  a,
-  b,
-  c,
+  None,
+  Moon,
+  Star,
 }
 
 export const HatZone = 'TheHatZone';
@@ -58,13 +58,13 @@ export function createHat(
 
   // Color the hat
   switch (pColor) {
-    case HatColor.a:
+    case HatColor.Red:
       sprite.setTint(0xdc3333);
       break;
-    case HatColor.b:
+    case HatColor.Blue:
       sprite.setTint(0x5b6ee1);
       break;
-    case HatColor.c:
+    case HatColor.Gold:
       sprite.setTint(0xfbca16);
       break;
   }
@@ -182,39 +182,39 @@ export function destroyHatAndEverythingItStandsFor(h: Hat) {
 }
 
 function determineHatShapeGene(catcher: Hat, pitcher: Hat): HatShape {
-  if (catcher.shape == HatShape.c || pitcher.shape == HatShape.c) {
-    return HatShape.c;
-  } else if (catcher.shape == HatShape.b || pitcher.shape == HatShape.b) {
-    return HatShape.b;
+  if (catcher.shape == HatShape.Wizard || pitcher.shape == HatShape.Wizard) {
+    return HatShape.Wizard;
+  } else if (catcher.shape == HatShape.Floppy || pitcher.shape == HatShape.Floppy) {
+    return HatShape.Floppy;
   }
 
-  return HatShape.a;
+  return HatShape.Cone;
 }
 
 function determineHatColorGene(catcher: Hat, pitcher: Hat): HatColor {
-  if (catcher.color == HatColor.c || pitcher.color == HatColor.c) {
-    return HatColor.c;
-  } else if (catcher.color == HatColor.b || pitcher.color == HatColor.b) {
-    return HatColor.b;
+  if (catcher.color == HatColor.Gold || pitcher.color == HatColor.Gold) {
+    return HatColor.Gold;
+  } else if (catcher.color == HatColor.Blue || pitcher.color == HatColor.Blue) {
+    return HatColor.Blue;
   }
 
-  return HatColor.a;
+  return HatColor.Red;
 }
 
 function determineHatDecorationGene(catcher: Hat, pitcher: Hat): HatDecoration {
   if (
-    catcher.decoration == HatDecoration.c ||
-    pitcher.decoration == HatDecoration.c
+    catcher.decoration == HatDecoration.Star ||
+    pitcher.decoration == HatDecoration.Star
   ) {
-    return HatDecoration.c;
+    return HatDecoration.Star;
   } else if (
-    catcher.decoration == HatDecoration.b ||
-    pitcher.decoration == HatDecoration.b
+    catcher.decoration == HatDecoration.Moon ||
+    pitcher.decoration == HatDecoration.Moon
   ) {
-    return HatDecoration.b;
+    return HatDecoration.Moon;
   }
 
-  return HatDecoration.a;
+  return HatDecoration.None;
 }
 
 export function compareHat(hatA: Hat, hatB: Hat): boolean {

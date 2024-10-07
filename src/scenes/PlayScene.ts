@@ -673,7 +673,7 @@ export default class PlayScreen extends Phaser.Scene {
     }, this);
 
     this.gameState.hats.forEach(function (hat) {
-      updateHat(hat, delta);
+      updateHat(hat);
     }, this);
   }
 }

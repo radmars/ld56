@@ -20,17 +20,17 @@ export interface ConveyorBeltItem {
 function getItemPrice(itemType: ItemType): number {
   switch (itemType) {
     case ItemType.Rat:
-      return 0;
-    case ItemType.Mushroom:
       return 1;
+    case ItemType.Mushroom:
+      return 2;
     case ItemType.Eraser:
-      return 5;
+      return 25;
     case ItemType.TrafficCone:
-      return 5;
+      return 25;
     case ItemType.Birdbath:
       return 50;
     case ItemType.MoonCookie:
-      return 20;
+      return 25;
     case ItemType.Rock:
       return 50;
     case ItemType.PhilStone:

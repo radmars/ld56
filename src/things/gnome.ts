@@ -87,6 +87,7 @@ export function updateHat(gnome: Gnome) {
   }
 
   gnome.container.add([gnome.hat, gnome.hatDecoration]);
+  setHatVisibility(gnome, gnome.foodInTumTum > 1);
 }
 
 export function createGnome(
@@ -369,8 +370,11 @@ function becomeOld(g: Gnome) {
 function becomeDead(g: Gnome) {
   g.awake = false; // Alas, this is forever
   g.body.play('gnome-die');
-  g.hat.setVisible(false);
-  g.hatDecoration.setVisible(false);
+  setHatVisibility(g, false);
+
+  if (g.foodInTumTum >= 2) {
+    layHat(g);
+  }
 
   g.body.once(
     Phaser.Animations.Events.ANIMATION_COMPLETE_KEY + 'gnome-die',
@@ -384,6 +388,11 @@ function becomeDead(g: Gnome) {
       g.playScene.sound.play('die');
     },
   );
+}
+
+function setHatVisibility(g: Gnome, visible: boolean) {
+  g.hat.visible = visible;
+  g.hatDecoration.visible = visible;
 }
 
 // case ItemType.Birdbath:

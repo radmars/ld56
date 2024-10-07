@@ -25,6 +25,7 @@ export interface GameState {
   belt?: Belt;
   cash: number;
   hud: HUD;
+  hasWon: boolean;
 }
 
 interface HUD {
@@ -87,11 +88,14 @@ export default class PlayScreen extends Phaser.Scene {
       hats: [],
       cash: 20,
       hud: {} as HUD, // plz ignore lies.
+      hasWon: false,
     };
   }
 
   preload() {
     this.load.image('bg', 'assets/game/bg.png');
+    this.load.image('win-screen', 'assets/game/win-screen.png');
+
     this.load.spritesheet('gnome-body', 'assets/game/gnome-body.png', {
       frameWidth: gnomeSize,
       frameHeight: gnomeSize,
@@ -645,7 +649,7 @@ export default class PlayScreen extends Phaser.Scene {
       return !h.consumed;
     });
     if (this.gameState.gnomes.length == 0 && this.gameState.hats.length < 2) {
-      console.debug('YOU LOSE');
+      this.sound.stopByKey('music');
       this.scene.start('GameOver');
     }
 

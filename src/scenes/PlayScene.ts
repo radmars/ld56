@@ -87,7 +87,7 @@ export default class PlayScreen extends Phaser.Scene {
     this.gameState = {
       gnomes: [],
       hats: [],
-      cash: 500,
+      cash: 20,
       hud: {} as HUD, // plz ignore lies.
     };
   }

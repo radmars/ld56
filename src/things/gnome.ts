@@ -85,7 +85,7 @@ export function createGnome(
 
   body.play(assets.gnomeYoungWalkAnimation);
 
-  const zone = add.zone(x, y, 32, 32).setRectangleDropZone(32, 32);
+  const zone = add.zone(x, y, 45, 45).setRectangleDropZone(32, 32);
   zone.setName(GnomeZone);
 
   const snoreType = Math.random() > 0.5;

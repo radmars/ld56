@@ -533,7 +533,14 @@ export default class PlayScreen extends Phaser.Scene {
       HatColor.a,
       HatDecoration.a,
     );
-    this.gameState.sellBox = createSellBox(this.gameAssets, 32, 32, this.add);
+    this.gameState.sellBox = createSellBox(
+      this.gameAssets,
+      32,
+      32,
+      this.add,
+      this.gameState,
+      this,
+    );
     this.gameState.belt = createBelt(
       this.gameState,
       this.add,

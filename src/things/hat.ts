@@ -1,5 +1,6 @@
 import { GameObjects, Input } from 'phaser';
 import PlayScene, { GameState } from '@/scenes/PlayScene';
+import { sellHat } from './sellbox';
 
 export enum HatShape {
   a,
@@ -40,6 +41,7 @@ export function createHat(
   pDecoration: HatDecoration,
   gameState: GameState,
   playScene: PlayScene,
+  interactable: boolean = true,
 ): Hat {
   const sprite = add.sprite(0, 0, playScene.gameAssets!.hatTexture, 3 + pShape);
   const decorationSprite = add.sprite(
@@ -78,80 +80,81 @@ export function createHat(
 
   enableZone(hat, add);
 
-  container.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
-    playScene.sound.play('pickup');
-  });
+  if (interactable) {
+    container.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
+      playScene.sound.play('pickup');
+    });
 
-  container.on(
-    Input.Events.GAMEOBJECT_DRAG,
-    (_: Input.Pointer, dragX: number, dragY: number) => {
-      container.x = dragX;
-      container.y = dragY;
-      disableZone(hat);
-    },
-  );
-  container.on(
-    Input.Events.GAMEOBJECT_DRAG_LEAVE,
-    (_: Input.Pointer, target: GameObjects.GameObject) => {
-      if (target == gameState.sellBox?.zone) {
-        gameState.sellBox.hoverLeave();
-      }
-    },
-  );
-  container.on(
-    Input.Events.GAMEOBJECT_DRAG_ENTER,
-    (_: Input.Pointer, target: GameObjects.GameObject) => {
-      if (target == gameState.sellBox?.zone) {
-        gameState.sellBox.hoverEnter();
-      }
-    },
-  );
-  container.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
-    console.log(`putting hat zone back`);
-    enableZone(hat, add);
-    playScene.sound.play('drop');
-  });
-  container.on(
-    Input.Events.GAMEOBJECT_DROP,
-    (_: Input.Pointer, target: GameObjects.GameObject) => {
-      console.log(`Dropping hat on `, target.name);
-      if (target == gameState.sellBox?.zone) {
-        gameState.cash +=
-          25 * (hat.shape + 1) * (hat.color + 1) * (hat.decoration + 1);
-        gameState.sellBox?.hoverLeave();
-        destroyHatAndEverythingItStandsFor(hat);
-        playScene.sound.play('sell');
-      } else if (target.name == HatZone) {
-        const h = gameState.hats.find((h) => {
-          return h.zone == target;
-        });
-        if (h) {
-          //Do had seggs
-          //TODO some sort of hat breeding animation/payoff before spawning gnome?
-
-          destroyHatAndEverythingItStandsFor(h);
-          destroyHatAndEverythingItStandsFor(hat);
-          playScene.sound.play('hatgrow');
-          playScene.spawnGnome(
-            h.container.x,
-            h.container.y,
-            determineHatShapeGene(h, hat),
-            determineHatColorGene(h, hat),
-            determineHatDecorationGene(h, hat),
-          );
+    container.on(
+      Input.Events.GAMEOBJECT_DRAG,
+      (_: Input.Pointer, dragX: number, dragY: number) => {
+        container.x = dragX;
+        container.y = dragY;
+        disableZone(hat);
+      },
+    );
+    container.on(
+      Input.Events.GAMEOBJECT_DRAG_LEAVE,
+      (_: Input.Pointer, target: GameObjects.GameObject) => {
+        if (target == gameState.sellBox?.zone) {
+          gameState.sellBox.hoverLeave();
         }
-      } else {
-        console.log(`putting hat zone back`);
+      },
+    );
+    container.on(
+      Input.Events.GAMEOBJECT_DRAG_ENTER,
+      (_: Input.Pointer, target: GameObjects.GameObject) => {
+        if (target == gameState.sellBox?.zone) {
+          gameState.sellBox.hoverEnter();
+        }
+      },
+    );
+    container.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
+      console.log(`putting hat zone back`);
+      enableZone(hat, add);
+      playScene.sound.play('drop');
+    });
+    container.on(
+      Input.Events.GAMEOBJECT_DROP,
+      (_: Input.Pointer, target: GameObjects.GameObject) => {
+        console.log(`Dropping hat on `, target.name);
+        if (target == gameState.sellBox?.zone) {
+          sellHat(hat, gameState.sellBox, gameState, add, playScene);
+          gameState.sellBox?.hoverLeave();
+          destroyHatAndEverythingItStandsFor(hat);
+          playScene.sound.play('sell');
+        } else if (target.name == HatZone) {
+          const h = gameState.hats.find((h) => {
+            return h.zone == target;
+          });
+          if (h) {
+            //Do had seggs
+            //TODO some sort of hat breeding animation/payoff before spawning gnome?
 
-        enableZone(hat, add);
-      }
-    },
-  );
+            destroyHatAndEverythingItStandsFor(h);
+            destroyHatAndEverythingItStandsFor(hat);
+            playScene.sound.play('hatgrow');
+            playScene.spawnGnome(
+              h.container.x,
+              h.container.y,
+              determineHatShapeGene(h, hat),
+              determineHatColorGene(h, hat),
+              determineHatDecorationGene(h, hat),
+            );
+          }
+        } else {
+          console.log(`putting hat zone back`);
+
+          enableZone(hat, add);
+        }
+      },
+    );
+  }
 
   return hat;
 }
 
-function disableZone(hat: Hat) {
+export function disableZone(hat: Hat) {
   hat.zone?.destroy();
 }
 
@@ -164,7 +167,7 @@ function enableZone(hat: Hat, add: GameObjects.GameObjectFactory) {
   hat.container.setAbove(hat.zone);
 }
 
-function destroyHatAndEverythingItStandsFor(h: Hat) {
+export function destroyHatAndEverythingItStandsFor(h: Hat) {
   h.zone?.destroy();
   h.container.destroy();
 }
@@ -203,4 +206,18 @@ function determineHatDecorationGene(catcher: Hat, pitcher: Hat): HatDecoration {
   }
 
   return HatDecoration.a;
+}
+
+export function compareHat(hatA: Hat, hatB: Hat): boolean {
+  if (hatA.shape != hatB.shape) {
+    return false;
+  }
+  if (hatA.color != hatB.color) {
+    return false;
+  }
+  if (hatA.decoration != hatB.decoration) {
+    return false;
+  }
+
+  return true;
 }

@@ -1,12 +1,20 @@
 // https://phaser.io/examples/v3.85.0/input/zones/view/circular-drop-zone
-import type { GameAssets } from '@/scenes/PlayScene';
+import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import { type GameObjects } from 'phaser';
+import {
+  compareHat,
+  createHat,
+  destroyHatAndEverythingItStandsFor,
+  Hat,
+} from './hat';
+import PlayScene from '@/scenes/PlayScene';
 
 export interface SellBox {
   sprite: GameObjects.Sprite;
   zone: GameObjects.Zone;
   hoverEnter: () => void;
   hoverLeave: () => void;
+  hatOrder: Hat;
 }
 
 export function createSellBox(
@@ -14,11 +22,15 @@ export function createSellBox(
   x: number,
   y: number,
   add: GameObjects.GameObjectFactory,
+  gameState: GameState,
+  playScene: PlayScene,
 ): SellBox {
   const sprite = add.sprite(x, y, assets.sellBoxTexture, 0);
   sprite.depth -= 1;
 
   const zone = add.zone(x, y, 64, 64).setRectangleDropZone(64, 64);
+
+  const hat = orderHat(x, y, add, gameState, playScene);
 
   return {
     sprite,
@@ -29,5 +41,51 @@ export function createSellBox(
     hoverLeave: () => {
       sprite.setTexture(assets.sellBoxTexture.key);
     },
+    hatOrder: hat,
   };
+}
+
+function orderHat(
+  x: number,
+  y: number,
+  add: GameObjects.GameObjectFactory,
+  gameState: GameState,
+  playScene: PlayScene,
+): Hat {
+  const newOrder = createHat(
+    x + 100,
+    y,
+    add,
+    Phaser.Math.Between(0, 2),
+    Phaser.Math.Between(0, 2),
+    Phaser.Math.Between(0, 2),
+    gameState,
+    playScene,
+    false,
+  );
+
+  return newOrder;
+}
+
+export function sellHat(
+  hat: Hat,
+  sellbox: SellBox,
+  gameState: GameState,
+  add: GameObjects.GameObjectFactory,
+  playScene: PlayScene,
+) {
+  if (compareHat(hat, sellbox.hatOrder)) {
+    destroyHatAndEverythingItStandsFor(sellbox.hatOrder);
+    gameState.cash += 2000;
+    sellbox.hatOrder = orderHat(
+      sellbox.sprite.x,
+      sellbox.sprite.y,
+      add,
+      gameState,
+      playScene,
+    );
+  } else {
+    gameState.cash +=
+      25 * (hat.shape + 1) * (hat.color + 1) * (hat.decoration + 1);
+  }
 }

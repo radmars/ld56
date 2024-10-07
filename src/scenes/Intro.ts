@@ -1,9 +1,9 @@
 import Phaser from 'phaser';
 import { WINDOW_CENTER, WINDOW_HEIGHT } from '@/config';
 
-export default class RadmarsScreen extends Phaser.Scene {
+export default class Intro extends Phaser.Scene {
   constructor() {
-    super('RadmarsScreen');
+    super('Intro');
   }
 
   preload(): void {
@@ -96,7 +96,7 @@ export default class RadmarsScreen extends Phaser.Scene {
     this.cameras.main.once(
       Phaser.Cameras.Scene2D.Events.FADE_OUT_COMPLETE,
       () => {
-        this.scene.start('SplashScreen');
+        this.scene.start('PlayScene');
       },
     );
 

@@ -1,6 +1,7 @@
 import RadmarsScreen from '@/scenes/RadmarsScreen';
 import PlayScene from './scenes/PlayScene';
 import { GameOver } from './scenes/GameOver';
+import SplashScreen from './scenes/SplashScreen';
 
 export const WINDOW_WIDTH = 800;
 export const WINDOW_HEIGHT = 800;
@@ -27,7 +28,7 @@ export const getConfig = (): Phaser.Types.Core.GameConfig => {
       },
     },
     scene: [
-      ...(!devMode ? [new RadmarsScreen()] : []),
+      ...(!devMode ? [new RadmarsScreen(), new SplashScreen()] : []),
       new PlayScene(),
       new GameOver(),
     ],

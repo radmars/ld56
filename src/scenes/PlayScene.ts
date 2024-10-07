@@ -623,9 +623,8 @@ export default class PlayScreen extends Phaser.Scene {
       cashText,
     };
 
-    // uncomment this at some point
-    //const music = this.sound.add('music', { volume: 0.5, loop: true });
-    //music.play();
+    const music = this.sound.add('music', { volume: 0.5, loop: true });
+    music.play();
     this.sound.setVolume(0.15);
   }
 

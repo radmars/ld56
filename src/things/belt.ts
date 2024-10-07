@@ -8,6 +8,7 @@ import {
 import { remove, sample } from 'lodash';
 import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import { WINDOW_HEIGHT } from '@/config';
+import PlayScene from '@/scenes/PlayScene';
 
 export interface Belt {
   items: ConveyorBeltItem[];
@@ -34,6 +35,7 @@ export function createBelt(
   add: GameObjects.GameObjectFactory,
   assets: GameAssets,
   time: Time.Clock,
+  playScene: PlayScene,
 ) {
   const belt: Belt = {
     items: [],
@@ -49,6 +51,7 @@ export function createBelt(
             WINDOW_HEIGHT - 68,
             add,
             getRandomItemType(),
+            playScene,
           ),
         );
       },

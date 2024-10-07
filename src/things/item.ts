@@ -1,5 +1,6 @@
 import { WINDOW_WIDTH } from '@/config';
 import type { GameAssets, GameState } from '@/scenes/PlayScene';
+import PlayScene from '@/scenes/PlayScene';
 import { Input, type GameObjects, type Textures } from 'phaser';
 import { feedGnome, GnomeZone } from './gnome';
 import { Belt } from './belt';
@@ -89,6 +90,7 @@ export function createConveyorBeltItem(
   y: number,
   add: GameObjects.GameObjectFactory,
   itemType: ItemType,
+  playScene: PlayScene,
 ): ConveyorBeltItem {
   const sprite = add.sprite(x, y, assets.unselectedButton, 0);
 
@@ -115,9 +117,11 @@ export function createConveyorBeltItem(
 
   itemSprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
     // Remove the item from the belt.
+    playScene.sound.play('pickup');
     if (beltItem.item) {
       beltItem.item = null;
       gameState.cash -= price;
+      playScene.sound.play('buy');
     }
   });
 
@@ -141,6 +145,7 @@ export function createConveyorBeltItem(
           }
         }
       }
+      playScene.sound.play('drop');
     },
   );
 

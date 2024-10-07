@@ -54,7 +54,9 @@ export function createHat(
     zone,
   };
 
-  sprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {});
+  sprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
+    playScene.sound.play('pickup');
+  });
 
   sprite.on(
     Input.Events.GAMEOBJECT_DRAG,
@@ -96,6 +98,7 @@ export function createHat(
         gameState.cash += 50;
         gameState.sellBox?.hoverLeave();
         sprite.destroy();
+        playScene.sound.play('sell');
       } else if (target.name == HatZone) {
         const h = gameState.hats.find((h) => {
           return h.zone == target;

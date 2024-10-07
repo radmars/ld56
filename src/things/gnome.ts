@@ -28,6 +28,7 @@ export interface Gnome {
   age: number;
   awaitingReaper: boolean;
   playScene: PlayScene;
+  mimi: boolean;
 }
 
 // drag/throw
@@ -57,6 +58,8 @@ export function createGnome(
   const zone = add.zone(x, y, 32, 32).setRectangleDropZone(32, 32);
   zone.setName(GnomeZone);
 
+  const snoreType = Math.random() > 0.5;
+
   const gnome = {
     container,
     body,
@@ -72,12 +75,15 @@ export function createGnome(
     age: 0,
     awaitingReaper: false,
     playScene: pPlayscene,
+    mimi: snoreType,
   };
 
   // Aging
   time.delayedCall(oldAge, becomeOld, [gnome]);
   // Reenable when this doesn't soft-lock the game
   // time.delayedCall(deathAge, becomeDead, [gnome]);
+  
+  pPlayscene.sound.play('hatgrow');
 
   return gnome;
 }
@@ -123,10 +129,12 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
 
 export function ungrabGnome(gnome: Gnome) {
   gnome.grabbed = false;
+  gnome.playScene.sound.play('whoosh');
 }
 
 export function grabGnome(gnome: Gnome) {
   gnome.grabbed = true;
+  gnome.playScene.sound.play('pickup');
 }
 
 export function feedGnome(
@@ -138,6 +146,7 @@ export function feedGnome(
     return false;
   }
   console.log(`Feeding ${gnome} a ${itemType}`);
+  gnome.playScene.sound.play('eat');
 
   gnome.foodInTumTum++;
 
@@ -155,6 +164,7 @@ export function layHat(gnome: Gnome) {
   // Do animation for pooping a hat
   gnome.body.play('gnome-lay-hat' + ageSuffix(gnome.age));
   gnome.body.chain('gnome-sleep' + ageSuffix(gnome.age));
+  gnome.playScene.sound.play('hatpop');
 }
 
 export function sleep(gnome: Gnome) {
@@ -162,6 +172,7 @@ export function sleep(gnome: Gnome) {
   gnome.actionDurationTracker = sleepDuration;
   gnome.speed = 0;
   gnome.foodInTumTum = 0;
+  gnome.playScene.sound.play(gnome.mimi ? 'honkmimi' : 'honkshoo');
 }
 
 export function awake(gnome: Gnome) {

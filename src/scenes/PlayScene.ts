@@ -151,6 +151,50 @@ export default class PlayScreen extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 64,
     });
+
+    this.load.audio('music', [
+      'assets/audio/ld56-theme.m4a',
+      'assets/audio/ld56-theme.ogg',
+    ]);
+    this.load.audio('buy', ['assets/audio/buy.m4a', 'assets/audio/buy.ogg']);
+    this.load.audio('die', ['assets/audio/die.m4a', 'assets/audio/die.ogg']);
+    this.load.audio('drop', ['assets/audio/drop.m4a', 'assets/audio/drop.ogg']);
+    this.load.audio('eat', ['assets/audio/eat.m4a', 'assets/audio/eat.ogg']);
+    this.load.audio('hatgrow', [
+      'assets/audio/hatgrow.m4a',
+      'assets/audio/hatgrow.ogg',
+    ]);
+    this.load.audio('hatpop', [
+      'assets/audio/hatpop.m4a',
+      'assets/audio/hatpop.ogg',
+    ]);
+    this.load.audio('heart', [
+      'assets/audio/heart.m4a',
+      'assets/audio/heart.ogg',
+    ]);
+    this.load.audio('honkmimi', [
+      'assets/audio/honkmimi.m4a',
+      'assets/audio/honkmimi.ogg',
+    ]);
+    this.load.audio('honkshoo', [
+      'assets/audio/honkshoo.m4a',
+      'assets/audio/honkshoo.ogg',
+    ]);
+    this.load.audio('magic', [
+      'assets/audio/magic.m4a',
+      'assets/audio/magic.ogg',
+    ]);
+    this.load.audio('pickup', [
+      'assets/audio/pickup.m4a',
+      'assets/audio/pickup.ogg',
+    ]);
+    this.load.audio('rub', ['assets/audio/rub.m4a', 'assets/audio/rub.ogg']);
+    this.load.audio('sell', ['assets/audio/sell.m4a', 'assets/audio/sell.ogg']);
+    this.load.audio('whoosh', [
+      'assets/audio/whoosh.m4a',
+      'assets/audio/whoosh.ogg',
+    ]);
+    this.load.audio('win', ['assets/audio/win.m4a', 'assets/audio/win.ogg']);
   }
 
   /**
@@ -375,6 +419,7 @@ export default class PlayScreen extends Phaser.Scene {
       this.add,
       this.gameAssets,
       this.time,
+      this,
     );
 
     this.input.on(Input.Events.DRAG_START, () => {

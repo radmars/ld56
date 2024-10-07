@@ -18,6 +18,7 @@ export interface Gnome {
   container: GameObjects.Container;
   body: GameObjects.Sprite;
   hat: GameObjects.Image;
+  hatDecoration: GameObjects.Image;
   heading: Phaser.Math.Vector2;
   speed: number;
   actionDurationTracker: number;
@@ -52,6 +53,12 @@ export function createGnome(
 ): Gnome {
   const body = add.sprite(0, 0, assets.gnomeBodyTexture.key);
   const hat = add.sprite(0, -19, assets.hatTexture.key, shapeGene);
+  const hatDecoration = add.sprite(
+    0,
+    -19,
+    assets.hatDecorationTexture.key,
+    decorationGene,
+  );
   switch (colorGene) {
     case HatColor.a:
       hat.setTint(0xdc3333);
@@ -64,7 +71,7 @@ export function createGnome(
       break;
   }
 
-  const container = add.container(x, y, [body, hat]);
+  const container = add.container(x, y, [body, hat, hatDecoration]);
   container.setSize(32, 32);
   // container.setInteractive();
 

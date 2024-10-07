@@ -5,6 +5,7 @@ import {
   grabGnome,
   ungrabGnome,
   type Gnome,
+  gnomeSize,
 } from '@/things/gnome';
 import Phaser, {
   GameObjects,
@@ -51,7 +52,6 @@ export interface GameAssets {
   hatDecorationA: Animations.Animation;
   hatDecorationB: Animations.Animation;
   hatDecorationC: Animations.Animation;
-  gnomeYoungIdleAnimation: Animations.Animation;
   ratTexture: Textures.Texture;
   mushroomTexture: Textures.Texture;
   birdbathTexture: Textures.Texture;
@@ -62,9 +62,14 @@ export interface GameAssets {
   philstoneTexture: Textures.Texture;
   wandTexture: Textures.Texture;
   potionTexture: Textures.Texture;
+  gnomeYoungIdleAnimation: Animations.Animation;
   gnomeYoungWalkAnimation: Animations.Animation;
   gnomeYoungLayHatAnimation: Animations.Animation;
   gnomeYoungSleepAnimation: Animations.Animation;
+  gnomeMiddleIdleAnimation: Animations.Animation;
+  gnomeMiddleWalkAnimation: Animations.Animation;
+  gnomeMiddleLayHatAnimation: Animations.Animation;
+  gnomeMiddleSleepAnimation: Animations.Animation;
   gnomeOldIdleAnimation: Animations.Animation;
   gnomeOldWalkAnimation: Animations.Animation;
   gnomeOldLayHatAnimation: Animations.Animation;
@@ -96,19 +101,19 @@ export default class PlayScreen extends Phaser.Scene {
   preload() {
     this.load.image('bg', 'assets/game/bg.png');
     this.load.spritesheet('gnome-body', 'assets/game/gnome-body.png', {
-      frameWidth: 32,
-      frameHeight: 32,
+      frameWidth: gnomeSize,
+      frameHeight: gnomeSize,
     });
     this.load.spritesheet('hat', 'assets/game/hat.png', {
-      frameWidth: 32,
-      frameHeight: 32,
+      frameWidth: 64,
+      frameHeight: 64,
     });
     this.load.spritesheet(
       'hat-decorations',
       'assets/game/hat_decorations.png',
       {
-        frameWidth: 32,
-        frameHeight: 32,
+        frameWidth: 64,
+        frameHeight: 64,
       },
     );
     this.load.spritesheet('rat', 'assets/game/rat.png', {
@@ -319,8 +324,21 @@ export default class PlayScreen extends Phaser.Scene {
         frameRate: 10,
         repeat: -1,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
-          start: 2,
-          end: 2,
+          start: 14,
+          end: 14,
+        }),
+      }),
+    );
+
+    const gnomeMiddleIdleAnimation = must(
+      'load-gnome-idle-middle',
+      this.anims.create({
+        key: 'gnome-idle-middle',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 0,
+          end: 0,
         }),
       }),
     );
@@ -332,8 +350,8 @@ export default class PlayScreen extends Phaser.Scene {
         frameRate: 10,
         repeat: -1,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
-          start: 0,
-          end: 0,
+          start: 7,
+          end: 7,
         }),
       }),
     );
@@ -345,8 +363,21 @@ export default class PlayScreen extends Phaser.Scene {
         frameRate: 10,
         repeat: -1,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
-          start: 2,
-          end: 3,
+          start: 15,
+          end: 16,
+        }),
+      }),
+    );
+
+    const gnomeMiddleWalkAnimation = must(
+      'load-gnome-walk-middle',
+      this.anims.create({
+        key: 'gnome-walk-middle',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 1,
+          end: 2,
         }),
       }),
     );
@@ -358,8 +389,8 @@ export default class PlayScreen extends Phaser.Scene {
         frameRate: 10,
         repeat: -1,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
-          start: 0,
-          end: 1,
+          start: 8,
+          end: 9,
         }),
       }),
     );
@@ -371,8 +402,21 @@ export default class PlayScreen extends Phaser.Scene {
         frameRate: 10,
         repeat: 0,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
-          start: 2,
-          end: 3,
+          start: 19,
+          end: 20,
+        }),
+      }),
+    );
+
+    const gnomeMiddleLayHatAnimation = must(
+      'load-gnome-lay-hat-middle',
+      this.anims.create({
+        key: 'gnome-lay-hat-middle',
+        frameRate: 10,
+        repeat: 0,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 5,
+          end: 6,
         }),
       }),
     );
@@ -384,21 +428,36 @@ export default class PlayScreen extends Phaser.Scene {
         frameRate: 10,
         repeat: 0,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
-          start: 0,
-          end: 1,
+          start: 12,
+          end: 13,
         }),
       }),
     );
+
+    const sleepRate = 1;
 
     const gnomeYoungSleepAnimation = must(
       'load-gnome-sleep-young',
       this.anims.create({
         key: 'gnome-sleep-young',
-        frameRate: 10,
-        repeat: 0,
+        frameRate: sleepRate,
+        repeat: -1,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
-          start: 2,
-          end: 3,
+          start: 17,
+          end: 18,
+        }),
+      }),
+    );
+
+    const gnomeMiddleSleepAnimation = must(
+      'load-gnome-sleep-middle',
+      this.anims.create({
+        key: 'gnome-sleep-middle',
+        frameRate: sleepRate,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 3,
+          end: 4,
         }),
       }),
     );
@@ -407,11 +466,11 @@ export default class PlayScreen extends Phaser.Scene {
       'load-gnome-sleep-old',
       this.anims.create({
         key: 'gnome-sleep-old',
-        frameRate: 10,
-        repeat: 0,
+        frameRate: sleepRate,
+        repeat: -1,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
-          start: 0,
-          end: 1,
+          start: 10,
+          end: 11,
         }),
       }),
     );
@@ -430,12 +489,16 @@ export default class PlayScreen extends Phaser.Scene {
       hatDecorationA,
       hatDecorationB,
       hatDecorationC,
-      gnomeYoungIdleAnimation,
       ratTexture,
       mushroomTexture,
+      gnomeYoungIdleAnimation,
       gnomeYoungWalkAnimation,
       gnomeYoungLayHatAnimation,
       gnomeYoungSleepAnimation,
+      gnomeMiddleIdleAnimation,
+      gnomeMiddleWalkAnimation,
+      gnomeMiddleLayHatAnimation,
+      gnomeMiddleSleepAnimation,
       gnomeOldIdleAnimation,
       gnomeOldWalkAnimation,
       gnomeOldLayHatAnimation,
@@ -530,8 +593,8 @@ export default class PlayScreen extends Phaser.Scene {
       WINDOW_CENTER.x,
       WINDOW_CENTER.y,
       HatShape.a,
-      HatColor.a,
-      HatDecoration.a,
+      HatColor.b,
+      HatDecoration.b,
     );
     this.gameState.sellBox = createSellBox(
       this.gameAssets,
@@ -571,6 +634,7 @@ export default class PlayScreen extends Phaser.Scene {
     // uncomment this at some point
     //const music = this.sound.add('music', { volume: 0.5, loop: true });
     //music.play();
+    this.sound.setVolume(0.1);
   }
 
   updateHud() {

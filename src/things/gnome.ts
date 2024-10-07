@@ -3,15 +3,24 @@ import { type GameObjects, type Physics } from 'phaser';
 import { ItemType } from '@/things//item';
 import PlayScene from '@/scenes/PlayScene';
 import { HatColor, HatDecoration, HatShape } from './hat';
+
+export const gnomeSize = 64;
+const hatOffset = -14;
+const decorationOffset = -15;
+const ageOffset = -4;
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from '@/config';
 
 const walkDuration: number = 1000;
 const pauseDuration: number = 1500;
 const sleepDuration: number = 5000;
+
 const walkSpeed: number = 0.05;
 const poopThreshold: integer = 3;
-const oldAge = 40_000;
-const deathAge = 60_000;
+
+const middleAge = 5_000;
+const oldAge = 10_000;
+const deathAge = 15_000;
+
 const walkBoundsLeft = 50;
 const walkBoundsRight = 50;
 const walkBoundsTop = 50;
@@ -57,10 +66,10 @@ export function createGnome(
   decorationGene: HatDecoration,
 ): Gnome {
   const body = add.sprite(0, 0, assets.gnomeBodyTexture.key);
-  const hat = add.sprite(0, -19, assets.hatTexture.key, shapeGene);
+  const hat = add.sprite(0, hatOffset, assets.hatTexture.key, shapeGene);
   const hatDecoration = add.sprite(
     0,
-    -19,
+    decorationOffset,
     assets.hatDecorationTexture.key,
     decorationGene,
   );
@@ -77,7 +86,7 @@ export function createGnome(
   }
 
   const container = add.container(x, y, [body, hat, hatDecoration]);
-  container.setSize(32, 32);
+  container.setSize(gnomeSize, gnomeSize);
   // container.setInteractive();
 
   const physics = matter.add.gameObject(container) as Physics.Matter.Sprite;
@@ -85,7 +94,9 @@ export function createGnome(
 
   body.play(assets.gnomeYoungWalkAnimation);
 
-  const zone = add.zone(x, y, 45, 45).setRectangleDropZone(32, 32);
+  const zone = add
+    .zone(x, y, gnomeSize, gnomeSize)
+    .setRectangleDropZone(gnomeSize, gnomeSize);
   zone.setName(GnomeZone);
 
   const snoreType = Math.random() > 0.5;
@@ -113,24 +124,25 @@ export function createGnome(
   };
 
   // Aging
+  time.delayedCall(middleAge, becomeMiddle, [gnome]);
   time.delayedCall(oldAge, becomeOld, [gnome]);
-  // Reenable when this doesn't soft-lock the game
-  time.delayedCall(deathAge, becomeDead, [gnome]);
+  // time.delayedCall(deathAge, becomeDead, [gnome]);
 
   return gnome;
 }
 
 export function updateGnome(gnome: Gnome, deltaTime: number): void {
   gnome.age += deltaTime;
-  // console.log(gnome.age);
 
   if (gnome.speed > 0) {
     if (gnome.heading.x > 0) {
       gnome.body.flipX = false;
       gnome.hat.flipX = false;
+      gnome.hatDecoration.flipX = false;
     } else if (gnome.heading.x < 0) {
       gnome.body.flipX = true;
       gnome.hat.flipX = true;
+      gnome.hatDecoration.flipX = true;
     }
 
     let newX = gnome.container.x + gnome.heading.x * gnome.speed * deltaTime;
@@ -174,6 +186,7 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
       }
     } else {
       awake(gnome);
+      gnome.hat.setVisible(true);
     }
   }
 
@@ -243,6 +256,7 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
   if (gnome.foodInTumTum >= poopThreshold) {
     layHat(gnome);
     sleep(gnome);
+
     gnome.playScene.spawnHat(
       gnome.container.x,
       gnome.container.y,
@@ -257,6 +271,7 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
 
 export function layHat(gnome: Gnome) {
   // Do animation for pooping a hat
+  gnome.hat.visible = false;
   gnome.body.play('gnome-lay-hat' + ageSuffix(gnome.age));
   gnome.body.chain('gnome-sleep' + ageSuffix(gnome.age));
   gnome.playScene.sound.play('hatpop');
@@ -280,16 +295,30 @@ export function awake(gnome: Gnome) {
 function ageSuffix(age: number) {
   if (age >= oldAge) {
     return '-old';
+  } else if (age >= middleAge) {
+    return '-middle';
   } else {
     return '-young';
   }
 }
 
+function becomeMiddle(g: Gnome) {
+  g.hat.y = hatOffset + ageOffset;
+  g.hatDecoration.y = decorationOffset + ageOffset;
+
+  if (g.body.anims.currentAnim?.key == 'gnome-idle-young') {
+    g.body.play('gnome-idle-middle');
+  } else if (g.body.anims.currentAnim?.key == 'gnome-walk-young') {
+    g.body.play('gnome-walk-middle');
+  }
+}
+
 function becomeOld(g: Gnome) {
-  if (g.body.anims.currentAnim?.key == 'gnome-walk-young') {
+  if (g.body.anims.currentAnim?.key == 'gnome-idle-middle') {
+    g.body.play('gnome-idle-old');
+  } else if (g.body.anims.currentAnim?.key == 'gnome-walk-middle') {
     g.body.play('gnome-walk-old');
   }
-  // Can add other animation transitions here, but the others so far are short.
 }
 
 function becomeDead(g: Gnome) {

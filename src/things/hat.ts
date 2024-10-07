@@ -235,3 +235,12 @@ export function compareHat(hatA: Hat, hatB: Hat): boolean {
 
   return true;
 }
+
+export function updateHat(hat: Hat) {
+  if (
+    hat.container.body?.velocity.x != 0 ||
+    hat.container.body.velocity.y != 0
+  ) {
+    hat.zone?.setPosition(hat.container.x, hat.container.y);
+  }
+}

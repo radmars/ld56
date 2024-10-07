@@ -15,6 +15,7 @@ import {
   HatColor,
   HatDecoration,
   HatShape,
+  updateHat,
 } from '@/things/hat';
 
 export interface GameState {
@@ -630,6 +631,10 @@ export default class PlayScreen extends Phaser.Scene {
 
     this.gameState.gnomes.forEach(function (gnome) {
       updateGnome(gnome, delta);
+    }, this);
+
+    this.gameState.hats.forEach(function (hat) {
+      updateHat(hat, delta);
     }, this);
   }
 }

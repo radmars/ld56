@@ -46,6 +46,47 @@ export interface Gnome {
   shapeGene: HatShape;
   colorGene: HatColor;
   decorationGene: HatDecoration;
+  add: GameObjects.GameObjectFactory;
+}
+
+function updateHat(gnome: Gnome) {
+  if (gnome.hat) {
+    gnome.hat.destroy();
+  }
+  if (gnome.hatDecoration) {
+    gnome.hatDecoration.destroy();
+  }
+
+  gnome.hat = gnome.add.sprite(
+    0,
+    hatOffset + (gnome.age < middleAge ? 0 : ageOffset),
+    'hat',
+    gnome.shapeGene,
+  );
+  gnome.hatDecoration = gnome.add.sprite(
+    0,
+    decorationOffset + (gnome.age < middleAge ? 0 : ageOffset),
+    'hat-decorations',
+    2 - gnome.decorationGene,
+  );
+  switch (gnome.colorGene) {
+    case HatColor.a:
+      gnome.hat.setTint(0xdc3333);
+      break;
+    case HatColor.b:
+      gnome.hat.setTint(0x5b6ee1);
+      break;
+    case HatColor.c:
+      gnome.hat.setTint(0xffd700);
+      break;
+  }
+
+  if (gnome.body.flipX) {
+    gnome.hat.flipX = true;
+    gnome.hatDecoration.flipX = true;
+  }
+
+  gnome.container.add([gnome.hat, gnome.hatDecoration]);
 }
 
 export function createGnome(
@@ -60,28 +101,9 @@ export function createGnome(
   decorationGene: HatDecoration,
 ): Gnome {
   const body = add.sprite(0, 0, assets.gnomeBodyTexture.key);
-  const hat = add.sprite(0, hatOffset, assets.hatTexture.key, shapeGene);
-  const hatDecoration = add.sprite(
-    0,
-    decorationOffset,
-    assets.hatDecorationTexture.key,
-    2 - decorationGene,
-  );
-  switch (colorGene) {
-    case HatColor.a:
-      hat.setTint(0xdc3333);
-      break;
-    case HatColor.b:
-      hat.setTint(0x5b6ee1);
-      break;
-    case HatColor.c:
-      hat.setTint(0xffd700);
-      break;
-  }
 
-  const container = add.container(x, y, [body, hat, hatDecoration]);
+  const container = add.container(x, y, [body]);
   container.setSize(gnomeSize, gnomeSize);
-  // container.setInteractive();
 
   body.play(assets.gnomeYoungWalkAnimation);
 
@@ -95,8 +117,8 @@ export function createGnome(
   const gnome = {
     container,
     body,
-    hat,
-    hatDecoration,
+    hat: undefined as unknown as GameObjects.Image,
+    hatDecoration: undefined as unknown as GameObjects.Image,
     heading: new Phaser.Math.Vector2(1, 0),
     speed: 0,
     actionDurationTracker: 0,
@@ -111,7 +133,10 @@ export function createGnome(
     shapeGene: shapeGene,
     colorGene: colorGene,
     decorationGene: decorationGene,
+    add,
   };
+
+  updateHat(gnome);
 
   // Aging
   time.delayedCall(middleAge, becomeMiddle, [gnome]);
@@ -201,7 +226,6 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
       gnome.colorGene = HatColor.a;
       break;
     case ItemType.Eraser:
-      // We probably want this to do something different
       gnome.decorationGene = HatDecoration.a;
       break;
     case ItemType.TrafficCone:
@@ -230,6 +254,8 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
       break;
   }
 
+  updateHat(gnome);
+
   if (gnome.foodInTumTum >= poopThreshold) {
     layHat(gnome);
   }
@@ -253,7 +279,7 @@ export function layHat(gnome: Gnome) {
 
   const blood = gnome.playScene.add.particles(
     gnome.container.x,
-    gnome.container.y - 20,
+    gnome.container.y - 20 - (gnome.age < middleAge ? ageOffset : 0),
     'hat',
     {
       frame: 0,

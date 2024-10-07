@@ -429,8 +429,8 @@ export default class PlayScreen extends Phaser.Scene {
       }),
     );
 
-    const sleepRate = 1;
-    const sleepRepeats = 5;
+    const sleepRate = 1.2;
+    const sleepRepeats = 4;
 
     const gnomeYoungSleepAnimation = must(
       'load-gnome-sleep-young',

@@ -3,6 +3,7 @@ import { type GameObjects, type Physics } from 'phaser';
 import { ItemType } from '@/things//item';
 import PlayScene from '@/scenes/PlayScene';
 import { HatColor, HatDecoration, HatShape } from './hat';
+import { WINDOW_HEIGHT, WINDOW_WIDTH } from '@/config';
 
 const walkDuration: number = 1000;
 const pauseDuration: number = 1500;
@@ -11,6 +12,10 @@ const walkSpeed: number = 0.05;
 const poopThreshold: integer = 3;
 const oldAge = 40_000;
 const deathAge = 60_000;
+const walkBoundsLeft = 50;
+const walkBoundsRight = 50;
+const walkBoundsTop = 50;
+const walkBoundsBottom = 140;
 
 export const GnomeZone = 'TheGnomeZone';
 
@@ -127,8 +132,30 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
       gnome.body.flipX = true;
       gnome.hat.flipX = true;
     }
-    gnome.container.x += gnome.heading.x * gnome.speed * deltaTime;
-    gnome.container.y += gnome.heading.y * gnome.speed * deltaTime;
+
+    let newX = gnome.container.x + gnome.heading.x * gnome.speed * deltaTime;
+    let newY = gnome.container.y + gnome.heading.y * gnome.speed * deltaTime;
+
+    //keep these bad bois in bounds
+    if (newX > WINDOW_WIDTH - walkBoundsRight || newX < walkBoundsLeft) {
+      gnome.heading.x *= -1;
+      newX = Phaser.Math.Clamp(
+        newX,
+        walkBoundsLeft,
+        WINDOW_WIDTH - walkBoundsRight,
+      );
+    }
+
+    if (newY > WINDOW_HEIGHT - walkBoundsBottom || newY < walkBoundsTop) {
+      gnome.heading.y *= -1;
+      newY = Phaser.Math.Clamp(
+        newY,
+        walkBoundsTop,
+        WINDOW_HEIGHT - walkBoundsBottom,
+      );
+    }
+
+    gnome.container.setPosition(newX, newY);
   }
 
   gnome.actionDurationTracker -= deltaTime;

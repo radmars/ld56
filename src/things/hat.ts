@@ -118,7 +118,7 @@ export function createHat(
       if (target == gameState.sellBox?.zone) {
         gameState.cash += 50;
         gameState.sellBox?.hoverLeave();
-        sprite.destroy();
+        destroyHatAndEverythingItStandsFor(hat);
         playScene.sound.play('sell');
       } else if (target.name == HatZone) {
         const h = gameState.hats.find((h) => {

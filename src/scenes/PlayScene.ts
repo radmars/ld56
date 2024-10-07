@@ -34,8 +34,6 @@ interface HUD {
 export interface GameAssets {
   backgroundTexture: Textures.Texture;
   unselectedButton: Textures.Texture;
-  sellBoxTexture: Textures.Texture;
-  sellBoxHoverTexture: Textures.Texture;
   gnomeBodyTexture: Textures.Texture;
   hatTexture: Textures.Texture;
   hatShapeA: Animations.Animation;
@@ -158,14 +156,6 @@ export default class PlayScreen extends Phaser.Scene {
       frameWidth: 40,
       frameHeight: 52,
     });
-    this.load.spritesheet('sellbox', 'assets/game/sellbox.png', {
-      frameWidth: 64,
-      frameHeight: 64,
-    });
-    this.load.spritesheet('sellbox-hover', 'assets/game/sellbox-hover.png', {
-      frameWidth: 64,
-      frameHeight: 64,
-    });
 
     this.load.audio('music', [
       'assets/audio/ld56-theme.m4a',
@@ -256,8 +246,6 @@ export default class PlayScreen extends Phaser.Scene {
     const wandTexture = this.textures.get('wand');
     const potionTexture = this.textures.get('potion');
     const unselectedButton = this.textures.get('unselectedButton');
-    const sellBoxTexture = this.textures.get('sellbox');
-    const sellBoxHoverTexture = this.textures.get('sellbox-hover');
 
     const hatShapeA = must(
       'load-hat-shape-a',
@@ -347,7 +335,6 @@ export default class PlayScreen extends Phaser.Scene {
         }),
       }),
     );
-
     const gnomeMiddleIdleAnimation = must(
       'load-gnome-idle-middle',
       this.anims.create({
@@ -512,8 +499,6 @@ export default class PlayScreen extends Phaser.Scene {
     return {
       backgroundTexture,
       unselectedButton,
-      sellBoxTexture,
-      sellBoxHoverTexture,
       gnomeBodyTexture,
       hatTexture,
       hatShapeA,
@@ -615,8 +600,6 @@ export default class PlayScreen extends Phaser.Scene {
     );
     this.gameState.sellBox = createSellBox(
       this.gameAssets,
-      32,
-      32,
       this.add,
       this.physics,
       this.gameState,

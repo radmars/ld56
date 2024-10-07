@@ -10,45 +10,42 @@ import {
 import PlayScene from '@/scenes/PlayScene';
 
 export interface SellBox {
-  sprite: GameObjects.Sprite;
   zone: GameObjects.Zone;
   hoverEnter: () => void;
   hoverLeave: () => void;
   hatOrder: Hat;
 }
 
+const boxCenterX = 112;
+const boxCenterY = 84;
+
 export function createSellBox(
   assets: GameAssets,
-  x: number,
-  y: number,
   add: GameObjects.GameObjectFactory,
   physics: Physics.Arcade.ArcadePhysics,
   gameState: GameState,
   playScene: PlayScene,
 ): SellBox {
-  const sprite = add.sprite(x, y, assets.sellBoxTexture, 0);
-  sprite.depth -= 1;
-
-  const zone = add.zone(x, y, 64, 64).setRectangleDropZone(64, 64);
-
-  const hat = orderHat(x, y, add, physics, gameState, playScene);
+  const zone = add.zone(boxCenterX, boxCenterY, 1, 1).setCircleDropZone(32);
+  const hat = orderHat(add, physics, gameState, playScene);
 
   return {
-    sprite,
     zone,
+    // TODO: Add highlight while hovering with sellable item
     hoverEnter: () => {
-      sprite.setTexture(assets.sellBoxHoverTexture.key);
+      // sprite.setTexture(assets.sellBoxHoverTexture.key);
     },
     hoverLeave: () => {
-      sprite.setTexture(assets.sellBoxTexture.key);
+      // sprite.setTexture(assets.sellBoxTexture.key);
     },
     hatOrder: hat,
   };
 }
 
+const quotaX = 300;
+const quotaY = 64;
+
 function orderHat(
-  x: number,
-  y: number,
   add: GameObjects.GameObjectFactory,
   physics: Physics.Arcade.ArcadePhysics,
   gameState: GameState,
@@ -60,8 +57,8 @@ function orderHat(
   }
 
   const newOrder = createHat(
-    x + 100,
-    y,
+    quotaX,
+    quotaY,
     add,
     physics,
     Phaser.Math.Between(0, maxTier),
@@ -87,14 +84,7 @@ export function sellHat(
   if (compareHat(hat, sellbox.hatOrder)) {
     destroyHatAndEverythingItStandsFor(sellbox.hatOrder);
     gameState.cash += hatValue(hat) * 4;
-    sellbox.hatOrder = orderHat(
-      sellbox.sprite.x,
-      sellbox.sprite.y,
-      add,
-      physics,
-      gameState,
-      playScene,
-    );
+    sellbox.hatOrder = orderHat(add, physics, gameState, playScene);
   } else {
     gameState.cash += hatValue(hat);
   }

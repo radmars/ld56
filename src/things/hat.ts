@@ -110,7 +110,6 @@ export function createHat(
       },
     );
     container.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
-      console.log(`putting hat zone back`);
       enableZone(hat, add);
       playScene.sound.play('drop');
     });
@@ -143,8 +142,6 @@ export function createHat(
             );
           }
         } else {
-          console.log(`putting hat zone back`);
-
           enableZone(hat, add);
         }
       },

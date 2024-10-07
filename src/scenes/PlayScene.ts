@@ -2,18 +2,10 @@ import { WINDOW_CENTER, WINDOW_WIDTH } from '@/config';
 import {
   updateGnome,
   createGnome,
-  grabGnome,
-  ungrabGnome,
   type Gnome,
   gnomeSize,
 } from '@/things/gnome';
-import Phaser, {
-  GameObjects,
-  Input,
-  Physics,
-  type Animations,
-  type Textures,
-} from 'phaser';
+import Phaser, { GameObjects, type Animations, type Textures } from 'phaser';
 import { createSellBox, SellBox } from '@/things/sellbox';
 import { createBelt, updateBelt, type Belt } from '@/things/belt';
 import { updatePrices } from '@/things/item';
@@ -395,8 +387,8 @@ export default class PlayScreen extends Phaser.Scene {
       }),
     );
 
-    const hatLayRate = 20;
-    const hatLayRepeats = 20;
+    const hatLayRate = 40;
+    const hatLayRepeats = 40;
 
     const gnomeYoungLayHatAnimation = must(
       'load-gnome-lay-hat-young',
@@ -531,7 +523,6 @@ export default class PlayScreen extends Phaser.Scene {
         x,
         y,
         this.add,
-        this.matter,
         this.time,
         this,
         shapeGene,
@@ -564,27 +555,6 @@ export default class PlayScreen extends Phaser.Scene {
 
   create() {
     this.gameAssets = this.setupAssets();
-    this.matter.world.setBounds();
-
-    const pointer = this.matter.add.pointerConstraint({
-      length: 30,
-      stiffness: 0.16,
-      damping: 0.1,
-    }) as unknown as Physics.Matter.PointerConstraint;
-
-    this.matter.world.on(Input.Events.DRAG_START, (body: MatterJS.BodyType) => {
-      const g = this.gameState.gnomes.find((g) => body == g.physics.body);
-      if (g) {
-        grabGnome(g);
-      }
-    });
-
-    this.matter.world.on(Input.Events.DRAG_END, (body: MatterJS.BodyType) => {
-      const g = this.gameState.gnomes.find((g) => body == g.physics.body);
-      if (g) {
-        ungrabGnome(g);
-      }
-    });
 
     const bg = this.add.image(
       WINDOW_CENTER.x,
@@ -615,16 +585,6 @@ export default class PlayScreen extends Phaser.Scene {
       this.time,
       this,
     );
-
-    this.input.on(Input.Events.DRAG_START, () => {
-      pointer.active = false;
-    });
-    this.input.on(Input.Events.DRAG_END, () => {
-      pointer.active = true;
-    });
-    this.input.on(Input.Events.DROP, () => {
-      pointer.active = true;
-    });
 
     const cashStr = getCashStr(this.gameState);
     const cashText = this.add.text(WINDOW_WIDTH - 8, 8, cashStr);

@@ -1,5 +1,5 @@
 import type { GameAssets } from '@/scenes/PlayScene';
-import { type GameObjects, type Physics } from 'phaser';
+import { type GameObjects } from 'phaser';
 import { ItemType } from '@/things//item';
 import PlayScene from '@/scenes/PlayScene';
 import { HatColor, HatDecoration, HatShape } from './hat';
@@ -35,7 +35,6 @@ export interface Gnome {
   heading: Phaser.Math.Vector2;
   speed: number;
   actionDurationTracker: number;
-  physics: Physics.Matter.Sprite;
   grabbed: boolean;
   awake: boolean;
   foodInTumTum: integer;
@@ -49,15 +48,11 @@ export interface Gnome {
   decorationGene: HatDecoration;
 }
 
-// drag/throw
-// https://labs.phaser.io/view.html?src=src/physics\matterjs\drag%20with%20pointer.js
-
 export function createGnome(
   assets: GameAssets,
   x: number,
   y: number,
   add: GameObjects.GameObjectFactory,
-  matter: Physics.Matter.MatterPhysics,
   time: Phaser.Time.Clock,
   pPlayscene: PlayScene,
   shapeGene: HatShape,
@@ -88,9 +83,6 @@ export function createGnome(
   container.setSize(gnomeSize, gnomeSize);
   // container.setInteractive();
 
-  const physics = matter.add.gameObject(container) as Physics.Matter.Sprite;
-  physics.setBounce(0.1);
-
   body.play(assets.gnomeYoungWalkAnimation);
 
   const zone = add
@@ -108,7 +100,6 @@ export function createGnome(
     heading: new Phaser.Math.Vector2(1, 0),
     speed: 0,
     actionDurationTracker: 0,
-    physics: physics,
     grabbed: false,
     awake: true,
     foodInTumTum: 0,
@@ -187,10 +178,6 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
     }
   }
 
-  if (gnome.physics.angle != 0.0) {
-    gnome.physics.setAngle(0.0);
-  }
-
   gnome.zone.x = gnome.container.x;
   gnome.zone.y = gnome.container.y;
 }
@@ -210,7 +197,6 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
     return false;
   }
 
-  console.log(`Feeding ${gnome} a ${itemType}`);
   gnome.playScene.sound.play('eat');
 
   gnome.foodInTumTum++;
@@ -334,7 +320,6 @@ function becomeDead(g: Gnome) {
   // We may want to use an object pool for this
   g.body.destroy();
   g.hat.destroy();
-  g.physics.destroy();
   g.container.destroy();
   g.zone.destroy();
   g.awaitingReaper = true;

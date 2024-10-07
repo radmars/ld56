@@ -54,14 +54,19 @@ function orderHat(
   gameState: GameState,
   playScene: PlayScene,
 ): Hat {
+  let maxTier = 1;
+  if (gameState.cash >= 200) {
+    maxTier = 2;
+  }
+
   const newOrder = createHat(
     x + 100,
     y,
     add,
     physics,
-    Phaser.Math.Between(0, 2),
-    Phaser.Math.Between(0, 2),
-    Phaser.Math.Between(0, 2),
+    Phaser.Math.Between(0, maxTier),
+    Phaser.Math.Between(0, maxTier),
+    Phaser.Math.Between(0, maxTier),
     gameState,
     playScene,
     false,
@@ -81,7 +86,7 @@ export function sellHat(
 ) {
   if (compareHat(hat, sellbox.hatOrder)) {
     destroyHatAndEverythingItStandsFor(sellbox.hatOrder);
-    gameState.cash += 2000;
+    gameState.cash += hatValue(hat) * 4;
     sellbox.hatOrder = orderHat(
       sellbox.sprite.x,
       sellbox.sprite.y,
@@ -91,7 +96,10 @@ export function sellHat(
       playScene,
     );
   } else {
-    gameState.cash +=
-      25 * (hat.shape + 1) * (hat.color + 1) * (hat.decoration + 1);
+    gameState.cash += hatValue(hat);
   }
+}
+
+function hatValue(hat: Hat): number {
+  return 25 * (hat.shape + 1) * (hat.color + 1) * (hat.decoration + 1);
 }

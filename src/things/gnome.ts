@@ -244,6 +244,28 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
 
   if (gnome.foodInTumTum >= poopThreshold) {
     layHat(gnome);
+  } else if (gnome.foodInTumTum >= 2) {
+    const blood = gnome.playScene.add.particles(
+      gnome.container.x,
+      gnome.container.y - 20 - (gnome.age < middleAge ? ageOffset : 0),
+      'hat',
+      {
+        frame: 0,
+        color: [0xff0000, 0x000000],
+        colorEase: 'quad.out',
+        lifespan: 1000,
+        angle: { min: 0, max: 180 },
+        scale: { start: 0.7, end: 0, ease: 'sine.out' },
+        speed: 50,
+        gravityY: 200,
+        emitCallback: () => {
+          const splat = Math.floor(Math.random() * 3.9999) + 1;
+          gnome.playScene.sound.play('splat' + splat);
+        },
+      },
+    );
+
+    gnome.playScene.time.delayedCall(250, () => blood.stop());
   }
 
   return true;

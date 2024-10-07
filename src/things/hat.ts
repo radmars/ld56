@@ -44,7 +44,7 @@ export function createHat(
 
   const zone = add.zone(x, y, 32, 32).setRectangleDropZone(32, 32);
   zone.setName(HatZone);
-  zone.setInteractive(false);
+  sprite.setAbove(zone);
 
   const hat: Hat = {
     sprite,
@@ -82,6 +82,7 @@ export function createHat(
   sprite.on(
     Input.Events.GAMEOBJECT_DROP,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
+      console.log(`Deopping hat on  ${target.name}`);
       if (target == gameState.sellBox?.zone) {
         gameState.sellBox?.hoverLeave();
         sprite.destroy();

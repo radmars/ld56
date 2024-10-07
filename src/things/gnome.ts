@@ -249,8 +249,6 @@ export function layHat(gnome: Gnome) {
   gnome.awake = false;
   gnome.foodInTumTum = 0;
 
-  gnome.playScene.sound.play('hatpop');
-
   // Do animation for pooping a hat
   gnome.hat.setVisible(false);
   gnome.hatDecoration.setVisible(false);
@@ -271,6 +269,10 @@ export function layHat(gnome: Gnome) {
       scale: { start: 0.7, end: 0, ease: 'sine.out' },
       speed: 400,
       gravityY: 400,
+      emitCallback: () => {
+        const splat = Math.floor(Math.random() * 3.9999) + 1;
+        gnome.playScene.sound.play('splat' + splat);
+      },
     },
   );
 
@@ -289,6 +291,7 @@ export function layHat(gnome: Gnome) {
         gnome.decorationGene,
       );
 
+      gnome.playScene.sound.play('hatpop');
       gnome.playScene.sound.play(gnome.mimi ? 'honkmimi' : 'honkshoo');
     },
   );

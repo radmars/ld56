@@ -171,6 +171,7 @@ export function createConveyorBeltItem(
               }
               break;
             case ItemUse.Rub:
+              playScene.sound.play('rub');
               switch (item.itemType) {
                 case ItemType.Eraser:
                   g.decorationGene = HatDecoration.None;

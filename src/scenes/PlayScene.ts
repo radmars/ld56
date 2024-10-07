@@ -171,6 +171,14 @@ export default class PlayScreen extends Phaser.Scene {
       'assets/audio/ld56-theme.m4a',
       'assets/audio/ld56-theme.ogg',
     ]);
+    this.load.audio('title', [
+      'assets/audio/title.m4a',
+      'assets/audio/title.ogg',
+    ]);
+    this.load.audio('industrial', [
+      'assets/audio/industrial.m4a',
+      'assets/audio/industrial.ogg',
+    ]);
     this.load.audio('buy', ['assets/audio/buy.m4a', 'assets/audio/buy.ogg']);
     this.load.audio('die', ['assets/audio/die.m4a', 'assets/audio/die.ogg']);
     this.load.audio('drop', ['assets/audio/drop.m4a', 'assets/audio/drop.ogg']);
@@ -210,6 +218,22 @@ export default class PlayScreen extends Phaser.Scene {
       'assets/audio/whoosh.ogg',
     ]);
     this.load.audio('win', ['assets/audio/win.m4a', 'assets/audio/win.ogg']);
+    this.load.audio('splat1', [
+      'assets/audio/splat1.m4a',
+      'assets/audio/splat1.ogg',
+    ]);
+    this.load.audio('splat2', [
+      'assets/audio/splat2.m4a',
+      'assets/audio/splat2.ogg',
+    ]);
+    this.load.audio('splat3', [
+      'assets/audio/splat3.m4a',
+      'assets/audio/splat3.ogg',
+    ]);
+    this.load.audio('splat4', [
+      'assets/audio/splat4.m4a',
+      'assets/audio/splat4.ogg',
+    ]);
   }
 
   /**

@@ -368,6 +368,7 @@ function becomeOld(g: Gnome) {
 
 // We may want to use an object pool for this
 function becomeDead(g: Gnome) {
+  g.playScene.sound.play('die');
   g.awake = false; // Alas, this is forever
   g.body.play('gnome-die');
   setHatVisibility(g, false);
@@ -385,7 +386,7 @@ function becomeDead(g: Gnome) {
       g.zone.destroy();
 
       g.awaitingReaper = true;
-      g.playScene.sound.play('die');
+      g.playScene.sound.play('rub');
     },
   );
 }

@@ -84,6 +84,7 @@ export default class PlayScreen extends Phaser.Scene {
 
   constructor() {
     super('PlayScene');
+
     this.gameState = {
       gnomes: [],
       hats: [],
@@ -579,6 +580,11 @@ export default class PlayScreen extends Phaser.Scene {
     this.gameState.gnomes = this.gameState.gnomes.filter((g) => {
       return !g.awaitingReaper;
     });
+    if (this.gameState.gnomes.length == 0 && this.gameState.hats.length < 2) {
+      console.debug('YOU LOSE');
+      this.scene.start('GameOver');
+    }
+
     this.gameState.gnomes.forEach(function (gnome) {
       updateGnome(gnome, delta);
     }, this);

@@ -1,5 +1,6 @@
 import RadmarsScreen from '@/scenes/RadmarsScreen';
 import PlayScene from './scenes/PlayScene';
+import { GameOver } from './scenes/GameOver';
 
 export const WINDOW_WIDTH = 800;
 export const WINDOW_HEIGHT = 800;
@@ -26,6 +27,10 @@ export const getConfig = (): Phaser.Types.Core.GameConfig => {
         // debug: true,
       },
     },
-    scene: [...(!devMode ? [new RadmarsScreen()] : []), new PlayScene()],
+    scene: [
+      ...(!devMode ? [new RadmarsScreen()] : []),
+      new PlayScene(),
+      new GameOver(),
+    ],
   };
 };

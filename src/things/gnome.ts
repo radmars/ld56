@@ -1,4 +1,4 @@
-import type { GameAssets, GameState } from '@/scenes/PlayScene';
+import type { GameAssets } from '@/scenes/PlayScene';
 import { type GameObjects, type Physics } from 'phaser';
 import { ItemType } from '@/things//item';
 import PlayScene from '@/scenes/PlayScene';
@@ -9,8 +9,8 @@ const pauseDuration: number = 1500;
 const sleepDuration: number = 5000;
 const walkSpeed: number = 0.05;
 const poopThreshold: integer = 3;
-const oldAge = 10_000;
-const deathAge = 20_000;
+const oldAge = 40_000;
+const deathAge = 60_000;
 
 export const GnomeZone = 'TheGnomeZone';
 
@@ -102,7 +102,7 @@ export function createGnome(
   // Aging
   time.delayedCall(oldAge, becomeOld, [gnome]);
   // Reenable when this doesn't soft-lock the game
-  // time.delayedCall(deathAge, becomeDead, [gnome]);
+  time.delayedCall(deathAge, becomeDead, [gnome]);
 
   return gnome;
 }
@@ -142,6 +142,10 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
     }
   }
 
+  if (gnome.physics.angle != 0.0) {
+    gnome.physics.setAngle(0.0);
+  }
+
   gnome.zone.x = gnome.container.x;
   gnome.zone.y = gnome.container.y;
 }
@@ -156,22 +160,53 @@ export function grabGnome(gnome: Gnome) {
   gnome.playScene.sound.play('pickup');
 }
 
-export function feedGnome(
-  gnome: Gnome,
-  gameState: GameState,
-  itemType: ItemType,
-) {
+export function feedGnome(gnome: Gnome, itemType: ItemType) {
   if (!gnome.awake) {
     return false;
   }
+
   console.log(`Feeding ${gnome} a ${itemType}`);
   gnome.playScene.sound.play('eat');
 
   gnome.foodInTumTum++;
 
+  // Apply mutations
+  switch (itemType) {
+    case ItemType.Mushroom:
+      gnome.colorGene = HatColor.a;
+      break;
+    case ItemType.Eraser:
+      // We probably want this to do something different
+      gnome.decorationGene = HatDecoration.a;
+      break;
+    case ItemType.TrafficCone:
+      gnome.shapeGene = HatShape.a;
+      break;
+    case ItemType.Birdbath:
+      gnome.colorGene = HatColor.b;
+      break;
+    case ItemType.MoonCookie:
+      gnome.decorationGene = HatDecoration.b;
+      break;
+    case ItemType.Rock:
+      gnome.shapeGene = HatShape.b;
+      break;
+    case ItemType.PhilStone:
+      gnome.colorGene = HatColor.c;
+      gnome.playScene.sound.play('magic');
+      break;
+    case ItemType.Wand:
+      gnome.decorationGene = HatDecoration.c;
+      gnome.playScene.sound.play('magic');
+      break;
+    case ItemType.Potion:
+      gnome.shapeGene = HatShape.c;
+      gnome.playScene.sound.play('magic');
+      break;
+  }
+
   if (gnome.foodInTumTum >= poopThreshold) {
     layHat(gnome);
-    //TODO if gnome is old, die otherwise sleep
     sleep(gnome);
     gnome.playScene.spawnHat(
       gnome.container.x,

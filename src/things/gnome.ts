@@ -131,6 +131,10 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
     }
   }
 
+  if (gnome.physics.angle != 0.0) {
+    gnome.physics.setAngle(0.0);
+  }
+
   gnome.zone.x = gnome.container.x;
   gnome.zone.y = gnome.container.y;
 }

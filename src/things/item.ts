@@ -5,8 +5,16 @@ import { feedGnome, GnomeZone } from './gnome';
 import { Belt } from './belt';
 
 export enum ItemType {
-  Chicken,
-  GreenMushroom,
+  Rat,
+  Mushroom,
+  Eraser,
+  TrafficCone,
+  Birdbath,
+  MoonCookie,
+  Rock,
+  PhilStone,
+  Wand,
+  Potion,
 }
 
 export interface ConveyorBeltItem {
@@ -19,10 +27,26 @@ export interface ConveyorBeltItem {
 
 function getItemPrice(itemType: ItemType): number {
   switch (itemType) {
-    case ItemType.Chicken:
+    case ItemType.Rat:
       return 1;
-    case ItemType.GreenMushroom:
-      return 2;
+    case ItemType.Mushroom:
+      return 1;
+    case ItemType.Eraser:
+      return 5;
+    case ItemType.TrafficCone:
+      return 5;
+    case ItemType.Birdbath:
+      return 50;
+    case ItemType.MoonCookie:
+      return 20;
+    case ItemType.Rock:
+      return 50;
+    case ItemType.PhilStone:
+      return 999;
+    case ItemType.Wand:
+      return 500;
+    case ItemType.Potion:
+      return 200;
   }
 }
 
@@ -31,10 +55,26 @@ function getItemTypeIcon(
   assets: GameAssets,
 ): Textures.Texture {
   switch (itemType) {
-    case ItemType.Chicken:
-      return assets.chickenTexture;
-    case ItemType.GreenMushroom:
-      return assets.greenMushroomTexture;
+    case ItemType.Rat:
+      return assets.ratTexture;
+    case ItemType.Mushroom:
+      return assets.mushroomTexture;
+    case ItemType.Eraser:
+      return assets.eraserTexture;
+    case ItemType.TrafficCone:
+      return assets.trafficConeTexture;
+    case ItemType.Birdbath:
+      return assets.birdbathTexture;
+    case ItemType.MoonCookie:
+      return assets.mooncookieTexture;
+    case ItemType.Rock:
+      return assets.rockTexture;
+    case ItemType.PhilStone:
+      return assets.philstoneTexture;
+    case ItemType.Wand:
+      return assets.wandTexture;
+    case ItemType.Potion:
+      return assets.potionTexture;
   }
 }
 export interface Item {
@@ -56,8 +96,10 @@ export function createConveyorBeltItem(
   itemSprite.setInteractive({ draggable: true });
 
   const price = getItemPrice(itemType);
+  const priceText = `$${price}`;
 
-  const text = add.text(x - 7 * (1 + Math.log10(price)), y + 32, `$${price}`);
+  const text = add.text(x, y + 32, priceText);
+  text.setOrigin(0.5, 0);
 
   const item: Item = {
     sprite: itemSprite,

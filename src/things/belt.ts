@@ -15,7 +15,18 @@ export interface Belt {
 }
 
 function getRandomItemType(): ItemType {
-  return sample([ItemType.Chicken, ItemType.GreenMushroom]);
+  return sample([
+    ItemType.Rat,
+    ItemType.Mushroom,
+    ItemType.Eraser,
+    ItemType.TrafficCone,
+    ItemType.Birdbath,
+    ItemType.MoonCookie,
+    ItemType.Rock,
+    ItemType.PhilStone,
+    ItemType.Wand,
+    ItemType.Potion,
+  ]);
 }
 
 export function createBelt(

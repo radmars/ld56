@@ -40,14 +40,21 @@ interface HUD {
 export interface GameAssets {
   backgroundTexture: Textures.Texture;
   unselectedButton: Textures.Texture;
-  selectedButton: Textures.Texture;
   sellBoxTexture: Textures.Texture;
   sellBoxHoverTexture: Textures.Texture;
   gnomeBodyTexture: Textures.Texture;
   hatTexture: Textures.Texture;
-  chickenTexture: Textures.Texture;
-  greenMushroomTexture: Textures.Texture;
   gnomeYoungIdleAnimation: Animations.Animation;
+  ratTexture: Textures.Texture;
+  mushroomTexture: Textures.Texture;
+  birdbathTexture: Textures.Texture;
+  mooncookieTexture: Textures.Texture;
+  eraserTexture: Textures.Texture;
+  trafficConeTexture: Textures.Texture;
+  rockTexture: Textures.Texture;
+  philstoneTexture: Textures.Texture;
+  wandTexture: Textures.Texture;
+  potionTexture: Textures.Texture;
   gnomeYoungWalkAnimation: Animations.Animation;
   gnomeYoungLayHatAnimation: Animations.Animation;
   gnomeYoungSleepAnimation: Animations.Animation;
@@ -88,11 +95,7 @@ export default class PlayScreen extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
-    this.load.spritesheet('chickenleg', 'assets/game/chicken.png', {
-      frameWidth: 64,
-      frameHeight: 64,
-    });
-    this.load.spritesheet('selectedButton', 'assets/game/button-selected.png', {
+    this.load.spritesheet('rat', 'assets/game/rat.png', {
       frameWidth: 64,
       frameHeight: 64,
     });
@@ -108,12 +111,42 @@ export default class PlayScreen extends Phaser.Scene {
       frameWidth: 64,
       frameHeight: 64,
     });
-
+    this.load.spritesheet('eraser', 'assets/game/eraser.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('trafficcone', 'assets/game/traffic_cone.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('birdbath', 'assets/game/bird_bath.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('mooncookie', 'assets/game/moon_cookie.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('rock', 'assets/game/rock.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('philstone', 'assets/game/philosophers_stone.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('wand', 'assets/game/wand.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
+    this.load.spritesheet('potion', 'assets/game/potion.png', {
+      frameWidth: 64,
+      frameHeight: 64,
+    });
     this.load.spritesheet('sellbox', 'assets/game/sellbox.png', {
       frameWidth: 64,
       frameHeight: 64,
     });
-
     this.load.spritesheet('sellbox-hover', 'assets/game/sellbox-hover.png', {
       frameWidth: 64,
       frameHeight: 64,
@@ -128,10 +161,17 @@ export default class PlayScreen extends Phaser.Scene {
     const backgroundTexture = this.textures.get('bg');
     const gnomeBodyTexture = this.textures.get('gnome-body');
     const hatTexture = this.textures.get('hat');
-    const chickenTexture = this.textures.get('chickenleg');
-    const greenMushroomTexture = this.textures.get('mushroom');
+    const ratTexture = this.textures.get('rat');
+    const mushroomTexture = this.textures.get('mushroom');
+    const eraserTexture = this.textures.get('eraser');
+    const trafficConeTexture = this.textures.get('trafficcone');
+    const birdbathTexture = this.textures.get('birdbath');
+    const mooncookieTexture = this.textures.get('mooncookie');
+    const rockTexture = this.textures.get('rock');
+    const philstoneTexture = this.textures.get('philstone');
+    const wandTexture = this.textures.get('wand');
+    const potionTexture = this.textures.get('potion');
     const unselectedButton = this.textures.get('unselectedButton');
-    const selectedButton = this.textures.get('selectedButton');
     const sellBoxTexture = this.textures.get('sellbox');
     const sellBoxHoverTexture = this.textures.get('sellbox-hover');
 
@@ -242,14 +282,13 @@ export default class PlayScreen extends Phaser.Scene {
     return {
       backgroundTexture,
       unselectedButton,
-      selectedButton,
       sellBoxTexture,
       sellBoxHoverTexture,
       gnomeBodyTexture,
       hatTexture,
-      chickenTexture,
-      greenMushroomTexture,
       gnomeYoungIdleAnimation,
+      ratTexture,
+      mushroomTexture,
       gnomeYoungWalkAnimation,
       gnomeYoungLayHatAnimation,
       gnomeYoungSleepAnimation,
@@ -257,6 +296,14 @@ export default class PlayScreen extends Phaser.Scene {
       gnomeOldWalkAnimation,
       gnomeOldLayHatAnimation,
       gnomeOldSleepAnimation,
+      mooncookieTexture,
+      eraserTexture,
+      trafficConeTexture,
+      birdbathTexture,
+      rockTexture,
+      wandTexture,
+      philstoneTexture,
+      potionTexture,
     };
   }
 
@@ -314,13 +361,11 @@ export default class PlayScreen extends Phaser.Scene {
       }
     });
 
-    this.add
-      .image(
-        WINDOW_CENTER.x,
-        WINDOW_CENTER.y,
-        this.gameAssets.backgroundTexture,
-      )
-      .setScale(2);
+    this.add.image(
+      WINDOW_CENTER.x,
+      WINDOW_CENTER.y,
+      this.gameAssets.backgroundTexture,
+    );
 
     this.spawnGnome(WINDOW_CENTER.x, WINDOW_CENTER.y);
     this.gameState.sellBox = createSellBox(this.gameAssets, 32, 32, this.add);
@@ -373,9 +418,4 @@ export default class PlayScreen extends Phaser.Scene {
 
 function getCashStr(gameState: GameState): string {
   return `You have $${gameState.cash} spend it wizely`;
-}
-
-/** This is absolutely not correct. Have fun. */
-export function textWidth(chars: string): number {
-  return 7 * chars.length;
 }

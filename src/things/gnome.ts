@@ -82,8 +82,6 @@ export function createGnome(
   time.delayedCall(oldAge, becomeOld, [gnome]);
   // Reenable when this doesn't soft-lock the game
   // time.delayedCall(deathAge, becomeDead, [gnome]);
-  
-  pPlayscene.sound.play('hatgrow');
 
   return gnome;
 }
@@ -205,4 +203,5 @@ function becomeDead(g: Gnome) {
   g.container.destroy();
   g.zone.destroy();
   g.awaitingReaper = true;
+  g.playScene.sound.play('die');
 }

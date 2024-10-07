@@ -440,6 +440,10 @@ export default class PlayScreen extends Phaser.Scene {
     this.gameState.hud = {
       cashText,
     };
+
+    // uncomment this at some point
+    //const music = this.sound.add('music', { volume: 0.5, loop: true });
+    //music.play();
   }
 
   updateHud() {

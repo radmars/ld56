@@ -89,6 +89,7 @@ export function createHat(
       .setRectangleDropZone(32, 32);
     hat.zone.setName(HatZone);
     sprite.setAbove(hat.zone);
+    playScene.sound.play('drop');
   });
   sprite.on(
     Input.Events.GAMEOBJECT_DROP,
@@ -110,6 +111,7 @@ export function createHat(
           destroyHatAndEverythingItStandsFor(h);
           destroyHatAndEverythingItStandsFor(hat);
           playScene.spawnGnome(h.sprite.x, h.sprite.y);
+          playScene.sound.play('hatgrow');
         }
       } else {
         console.log(`putting hat zone back`);

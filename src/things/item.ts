@@ -149,6 +149,10 @@ export function createConveyorBeltItem(
     },
   );
 
+  itemSprite.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
+    playScene.sound.play('drop');
+  });
+
   return beltItem;
 }
 

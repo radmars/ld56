@@ -104,11 +104,13 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
       if (gnome.speed > 0) {
         gnome.speed = 0;
         gnome.actionDurationTracker = pauseDuration;
+        gnome.body.play('gnome-idle' + ageSuffix(gnome.age));
       } else {
         gnome.speed = walkSpeed;
         gnome.actionDurationTracker = walkDuration;
-        //pick a new direction to walk
+        // Pick a new direction to walk
         gnome.heading.rotate(Phaser.Math.Between(0, 360));
+        gnome.body.play('gnome-walk' + ageSuffix(gnome.age));
       }
     } else {
       awake(gnome);
@@ -151,9 +153,8 @@ export function feedGnome(
 
 export function layHat(gnome: Gnome) {
   // Do animation for pooping a hat
-  const key = ageKey(gnome.age);
-  gnome.body.play(`gnome-${key}-lay-hat`);
-  gnome.body.chain(`gnome-${key}-sleep`);
+  gnome.body.play('gnome-lay-hat' + ageSuffix(gnome.age));
+  gnome.body.chain('gnome-sleep' + ageSuffix(gnome.age));
 }
 
 export function sleep(gnome: Gnome) {
@@ -164,24 +165,23 @@ export function sleep(gnome: Gnome) {
 }
 
 export function awake(gnome: Gnome) {
-  const key = ageKey(gnome.age);
-  gnome.body.play(`gnome-${key}-walk`);
+  gnome.body.play('gnome-walk' + ageSuffix(gnome.age));
   gnome.awake = true;
   gnome.actionDurationTracker = 0;
   gnome.foodInTumTum = 0;
 }
 
-function ageKey(age: number) {
+function ageSuffix(age: number) {
   if (age >= oldAge) {
-    return 'old';
+    return '-old';
   } else {
-    return 'young';
+    return '-young';
   }
 }
 
 function becomeOld(g: Gnome) {
-  if (g.body.anims.currentAnim?.key == 'gnome-young-walk') {
-    g.body.play('gnome-old-walk');
+  if (g.body.anims.currentAnim?.key == 'gnome-walk-young') {
+    g.body.play('gnome-walk-old');
   }
   // Can add other animation transitions here, but the others so far are short.
 }

@@ -47,9 +47,11 @@ export interface GameAssets {
   hatTexture: Textures.Texture;
   chickenTexture: Textures.Texture;
   greenMushroomTexture: Textures.Texture;
+  gnomeYoungIdleAnimation: Animations.Animation;
   gnomeYoungWalkAnimation: Animations.Animation;
   gnomeYoungLayHatAnimation: Animations.Animation;
   gnomeYoungSleepAnimation: Animations.Animation;
+  gnomeOldIdleAnimation: Animations.Animation;
   gnomeOldWalkAnimation: Animations.Animation;
   gnomeOldLayHatAnimation: Animations.Animation;
   gnomeOldSleepAnimation: Animations.Animation;
@@ -133,10 +135,36 @@ export default class PlayScreen extends Phaser.Scene {
     const sellBoxTexture = this.textures.get('sellbox');
     const sellBoxHoverTexture = this.textures.get('sellbox-hover');
 
-    const gnomeYoungWalkAnimation = must(
-      'load-gnome-young-walk',
+    const gnomeYoungIdleAnimation = must(
+      'load-gnome-idle-young',
       this.anims.create({
-        key: 'gnome-young-walk',
+        key: 'gnome-idle-young',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 2,
+          end: 2,
+        }),
+      }),
+    );
+
+    const gnomeOldIdleAnimation = must(
+      'load-gnome-idle-old',
+      this.anims.create({
+        key: 'gnome-idle-old',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 0,
+          end: 0,
+        }),
+      }),
+    );
+
+    const gnomeYoungWalkAnimation = must(
+      'load-gnome-walk-young',
+      this.anims.create({
+        key: 'gnome-walk-young',
         frameRate: 10,
         repeat: -1,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
@@ -147,9 +175,9 @@ export default class PlayScreen extends Phaser.Scene {
     );
 
     const gnomeOldWalkAnimation = must(
-      'load-gnome-old-walk',
+      'load-gnome-walk-old',
       this.anims.create({
-        key: 'gnome-old-walk',
+        key: 'gnome-walk-old',
         frameRate: 10,
         repeat: -1,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
@@ -160,9 +188,9 @@ export default class PlayScreen extends Phaser.Scene {
     );
 
     const gnomeYoungLayHatAnimation = must(
-      'load-gnome-young-lay-hat',
+      'load-gnome-lay-hat-young',
       this.anims.create({
-        key: 'gnome-young-lay-hat',
+        key: 'gnome-lay-hat-young',
         frameRate: 10,
         repeat: 0,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
@@ -173,9 +201,9 @@ export default class PlayScreen extends Phaser.Scene {
     );
 
     const gnomeOldLayHatAnimation = must(
-      'load-gnome-old-lay-hat',
+      'load-gnome-lay-hat-old',
       this.anims.create({
-        key: 'gnome-old-lay-hat',
+        key: 'gnome-lay-hat-old',
         frameRate: 10,
         repeat: 0,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
@@ -186,9 +214,9 @@ export default class PlayScreen extends Phaser.Scene {
     );
 
     const gnomeYoungSleepAnimation = must(
-      'load-gnome-young-sleep',
+      'load-gnome-sleep-young',
       this.anims.create({
-        key: 'gnome-young-sleep',
+        key: 'gnome-sleep-young',
         frameRate: 10,
         repeat: 0,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
@@ -199,9 +227,9 @@ export default class PlayScreen extends Phaser.Scene {
     );
 
     const gnomeOldSleepAnimation = must(
-      'load-gnome-old-sleep',
+      'load-gnome-sleep-old',
       this.anims.create({
-        key: 'gnome-old-sleep',
+        key: 'gnome-sleep-old',
         frameRate: 10,
         repeat: 0,
         frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
@@ -221,11 +249,13 @@ export default class PlayScreen extends Phaser.Scene {
       hatTexture,
       chickenTexture,
       greenMushroomTexture,
+      gnomeYoungIdleAnimation,
       gnomeYoungWalkAnimation,
-      gnomeOldWalkAnimation,
       gnomeYoungLayHatAnimation,
-      gnomeOldLayHatAnimation,
       gnomeYoungSleepAnimation,
+      gnomeOldIdleAnimation,
+      gnomeOldWalkAnimation,
+      gnomeOldLayHatAnimation,
       gnomeOldSleepAnimation,
     };
   }

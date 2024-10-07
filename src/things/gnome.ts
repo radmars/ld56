@@ -374,7 +374,13 @@ function becomeDead(g: Gnome) {
   setHatVisibility(g, false);
 
   if (g.foodInTumTum >= 2) {
-    layHat(g);
+    g.playScene.spawnHat(
+      g.container.x,
+      g.container.y,
+      g.shapeGene,
+      g.colorGene,
+      g.decorationGene,
+    );
   }
 
   g.body.once(

@@ -10,6 +10,8 @@ import { WINDOW_HEIGHT } from '@/config';
 import PlayScene from '@/scenes/PlayScene';
 import { ItemType } from './item-enums';
 
+export const beltHeight = 100;
+
 export interface Belt {
   items: ConveyorBeltItem[];
   spawnTimer: Time.TimerEvent;

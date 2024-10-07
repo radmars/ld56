@@ -7,7 +7,7 @@ import {
 } from '@/things/gnome';
 import Phaser, { GameObjects, type Animations, type Textures } from 'phaser';
 import { createSellBox, SellBox } from '@/things/sellbox';
-import { createBelt, updateBelt, type Belt } from '@/things/belt';
+import { beltHeight, createBelt, updateBelt, type Belt } from '@/things/belt';
 import { updatePrices } from '@/things/item';
 import {
   createHat,
@@ -67,6 +67,7 @@ export interface GameAssets {
   gnomeOldWalkAnimation: Animations.Animation;
   gnomeOldLayHatAnimation: Animations.Animation;
   gnomeOldSleepAnimation: Animations.Animation;
+  gnomeDieAnimation: Animations.Animation;
 }
 
 const must = <T>(what: string, thing: T | false): T => {
@@ -472,6 +473,18 @@ export default class PlayScreen extends Phaser.Scene {
       }),
     );
 
+    const gnomeDieAnimation = must(
+      'load-gnome-die',
+      this.anims.create({
+        key: 'gnome-die',
+        frameRate: 10,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 21,
+          end: 46,
+        }),
+      }),
+    );
+
     return {
       backgroundTexture,
       unselectedButton,
@@ -500,6 +513,7 @@ export default class PlayScreen extends Phaser.Scene {
       gnomeOldWalkAnimation,
       gnomeOldLayHatAnimation,
       gnomeOldSleepAnimation,
+      gnomeDieAnimation,
       mooncookieTexture,
       eraserTexture,
       trafficConeTexture,
@@ -566,6 +580,7 @@ export default class PlayScreen extends Phaser.Scene {
       this.gameAssets.backgroundTexture,
     );
     bg.depth = -2;
+    this.physics.world.setBounds(0, 0, 800, 800 - beltHeight);
 
     this.spawnGnome(
       WINDOW_CENTER.x,

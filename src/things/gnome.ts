@@ -153,10 +153,43 @@ export function feedGnome(
   if (!gnome.awake) {
     return false;
   }
+
   console.log(`Feeding ${gnome} a ${itemType}`);
   gnome.playScene.sound.play('eat');
 
   gnome.foodInTumTum++;
+
+  // Apply mutations
+  switch (itemType) {
+    case ItemType.Mushroom:
+      gnome.colorGene = HatColor.a;
+      break;
+    case ItemType.Eraser:
+      // We probably want this to do something different
+      gnome.decorationGene = HatDecoration.a;
+      break;
+    case ItemType.TrafficCone:
+      gnome.shapeGene = HatShape.a;
+      break;
+    case ItemType.Birdbath:
+      gnome.colorGene = HatColor.b;
+      break;
+    case ItemType.MoonCookie:
+      gnome.decorationGene = HatDecoration.b;
+      break;
+    case ItemType.Rock:
+      gnome.shapeGene = HatShape.b;
+      break;
+    case ItemType.PhilStone:
+      gnome.colorGene = HatColor.c;
+      break;
+    case ItemType.Wand:
+      gnome.decorationGene = HatDecoration.c;
+      break;
+    case ItemType.Potion:
+      gnome.shapeGene = HatShape.c;
+      break;
+  }
 
   if (gnome.foodInTumTum >= poopThreshold) {
     layHat(gnome);

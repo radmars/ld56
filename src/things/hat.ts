@@ -31,6 +31,7 @@ export interface Hat {
   decorationSprite: GameObjects.Sprite;
   zone?: GameObjects.Zone;
   container: GameObjects.Container;
+  consumed: boolean;
 }
 
 export function createHat(
@@ -87,6 +88,7 @@ export function createHat(
     sprite,
     decorationSprite,
     container,
+    consumed: false,
   };
 
   enableZone(hat, add);
@@ -178,6 +180,7 @@ function enableZone(hat: Hat, add: GameObjects.GameObjectFactory) {
 export function destroyHatAndEverythingItStandsFor(h: Hat) {
   h.zone?.destroy();
   h.container.destroy();
+  h.consumed = true;
 }
 
 function determineHatShapeGene(catcher: Hat, pitcher: Hat): HatShape {

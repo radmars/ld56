@@ -620,6 +620,9 @@ export default class PlayScreen extends Phaser.Scene {
     this.gameState.gnomes = this.gameState.gnomes.filter((g) => {
       return !g.awaitingReaper;
     });
+    this.gameState.hats = this.gameState.hats.filter((h) => {
+      return !h.consumed;
+    });
     if (this.gameState.gnomes.length == 0 && this.gameState.hats.length < 2) {
       console.debug('YOU LOSE');
       this.scene.start('GameOver');

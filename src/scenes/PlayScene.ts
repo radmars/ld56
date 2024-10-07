@@ -586,6 +586,7 @@ export default class PlayScreen extends Phaser.Scene {
 
   create() {
     this.gameAssets = this.setupAssets();
+    this.gameState.cash = 20;
 
     const bg = this.add.image(
       WINDOW_CENTER.x,

@@ -11,6 +11,7 @@ import PlayScene from '@/scenes/PlayScene';
 import { ItemType } from './item-enums';
 
 export const beltHeight = 100;
+const fontHeight = 16;
 
 export interface Belt {
   items: ConveyorBeltItem[];
@@ -66,7 +67,7 @@ export function createBelt(
             gameState,
             assets,
             0,
-            WINDOW_HEIGHT - beltHeight / 2,
+            WINDOW_HEIGHT - (beltHeight + fontHeight) / 2,
             add,
             physics,
             getRandomItemType(),

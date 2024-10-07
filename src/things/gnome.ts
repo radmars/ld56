@@ -1,6 +1,5 @@
 import type { GameAssets } from '@/scenes/PlayScene';
 import { type GameObjects } from 'phaser';
-import { ItemType } from '@/things//item';
 import PlayScene from '@/scenes/PlayScene';
 import { HatColor, HatDecoration, HatShape } from './hat';
 
@@ -9,6 +8,7 @@ const hatOffset = -14;
 const decorationOffset = -15;
 const ageOffset = -4;
 import { WINDOW_HEIGHT, WINDOW_WIDTH } from '@/config';
+import { ItemType } from './item-enums';
 
 const walkDuration: number = 1000;
 const pauseDuration: number = 1500;

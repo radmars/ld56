@@ -3,28 +3,10 @@ import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import PlayScene from '@/scenes/PlayScene';
 import { Input, Physics, type GameObjects, type Textures } from 'phaser';
 import { feedGnome, GnomeZone, updateHat } from './gnome';
-import { Belt } from './belt';
+import { Belt, removeFromAvailable } from './belt';
 import { HatColor, HatDecoration, HatShape } from './hat';
 import { chuckRandom } from './physics';
-
-export enum ItemType {
-  Rat,
-  Mushroom,
-  Eraser,
-  TrafficCone,
-  Birdbath,
-  MoonCookie,
-  Rock,
-  PhilStone,
-  Wand,
-  Potion,
-}
-
-export enum ItemUse {
-  Food,
-  Rub,
-  // Dunk,
-}
+import { ItemType, ItemUse } from './item-enums';
 
 export interface ConveyorBeltItem {
   sprite: GameObjects.Sprite;
@@ -34,6 +16,7 @@ export interface ConveyorBeltItem {
   text: GameObjects.Text;
 }
 
+// TODO: Replace all of these switches with a custom class
 function getItemPrice(itemType: ItemType): number {
   switch (itemType) {
     case ItemType.Rat:
@@ -154,7 +137,12 @@ export function createConveyorBeltItem(
   itemSprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
     // Remove the item from the belt.
     playScene.sound.play('pickup');
+
     if (beltItem.item) {
+      if (getItemUse(beltItem.item.itemType) != ItemUse.Food) {
+        removeFromAvailable(beltItem.item.itemType);
+      }
+
       beltItem.item = null;
       gameState.cash -= price;
       playScene.sound.play('buy');

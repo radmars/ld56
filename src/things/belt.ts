@@ -2,32 +2,40 @@ import { Physics, Time, type GameObjects } from 'phaser';
 import {
   beltItemMove,
   createConveyorBeltItem,
-  ItemType,
   type ConveyorBeltItem,
 } from '@/things/item';
 import { remove, sample } from 'lodash';
 import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import { WINDOW_HEIGHT } from '@/config';
 import PlayScene from '@/scenes/PlayScene';
+import { ItemType } from './item-enums';
 
 export interface Belt {
   items: ConveyorBeltItem[];
   spawnTimer: Time.TimerEvent;
 }
 
+const available = [
+  ItemType.Rat,
+  ItemType.Mushroom,
+  ItemType.Eraser,
+  ItemType.TrafficCone,
+  ItemType.Birdbath,
+  ItemType.MoonCookie,
+  ItemType.Rock,
+  ItemType.PhilStone,
+  ItemType.Wand,
+  ItemType.Potion,
+];
+
+export function removeFromAvailable(i: ItemType) {
+  remove(available, (j) => {
+    return i == j;
+  });
+}
+
 function getRandomItemType(): ItemType {
-  return sample([
-    ItemType.Rat,
-    ItemType.Mushroom,
-    ItemType.Eraser,
-    ItemType.TrafficCone,
-    ItemType.Birdbath,
-    ItemType.MoonCookie,
-    ItemType.Rock,
-    ItemType.PhilStone,
-    ItemType.Wand,
-    ItemType.Potion,
-  ]);
+  return sample(available) as ItemType;
 }
 
 export function createBelt(

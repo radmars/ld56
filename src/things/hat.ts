@@ -46,7 +46,7 @@ export function createHat(
   const sprite = add.sprite(0, 0, playScene.gameAssets!.hatTexture, 3 + pShape);
   const decorationSprite = add.sprite(
     0,
-    0,
+    15,
     playScene.gameAssets!.hatDecorationTexture,
     pDecoration,
   );
@@ -66,7 +66,7 @@ export function createHat(
 
   const container = add.container(x, y);
   container.add([sprite, decorationSprite]);
-  container.setSize(32, 32);
+  container.setSize(64, 64);
   container.setInteractive({ draggable: true });
 
   const hat: Hat = {

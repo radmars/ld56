@@ -12,7 +12,6 @@ import { WINDOW_HEIGHT, WINDOW_WIDTH } from '@/config';
 
 const walkDuration: number = 1000;
 const pauseDuration: number = 1500;
-const sleepDuration: number = 5000;
 
 const walkSpeed: number = 0.05;
 const poopThreshold: integer = 3;
@@ -148,7 +147,7 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
     let newX = gnome.container.x + gnome.heading.x * gnome.speed * deltaTime;
     let newY = gnome.container.y + gnome.heading.y * gnome.speed * deltaTime;
 
-    //keep these bad bois in bounds
+    // Keep these bad bois in bounds
     if (newX > WINDOW_WIDTH - walkBoundsRight || newX < walkBoundsLeft) {
       gnome.heading.x *= -1;
       newX = Phaser.Math.Clamp(
@@ -170,9 +169,10 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
     gnome.container.setPosition(newX, newY);
   }
 
-  gnome.actionDurationTracker -= deltaTime;
-  if (gnome.actionDurationTracker <= 0) {
-    if (gnome.awake) {
+  if (gnome.awake) {
+    gnome.actionDurationTracker -= deltaTime;
+
+    if (gnome.actionDurationTracker <= 0) {
       if (gnome.speed > 0) {
         gnome.speed = 0;
         gnome.actionDurationTracker = pauseDuration;
@@ -184,9 +184,6 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
         gnome.heading.rotate(Phaser.Math.Between(0, 360));
         gnome.body.play('gnome-walk' + ageSuffix(gnome.age));
       }
-    } else {
-      awake(gnome);
-      gnome.hat.setVisible(true);
     }
   }
 
@@ -255,41 +252,53 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
 
   if (gnome.foodInTumTum >= poopThreshold) {
     layHat(gnome);
-    sleep(gnome);
-
-    gnome.playScene.spawnHat(
-      gnome.container.x,
-      gnome.container.y,
-      gnome.shapeGene,
-      gnome.colorGene,
-      gnome.decorationGene,
-    );
   }
 
   return true;
 }
 
 export function layHat(gnome: Gnome) {
-  // Do animation for pooping a hat
-  gnome.hat.visible = false;
-  gnome.body.play('gnome-lay-hat' + ageSuffix(gnome.age));
-  gnome.body.chain('gnome-sleep' + ageSuffix(gnome.age));
-  gnome.playScene.sound.play('hatpop');
-}
-
-export function sleep(gnome: Gnome) {
   gnome.awake = false;
-  gnome.actionDurationTracker = sleepDuration;
   gnome.speed = 0;
   gnome.foodInTumTum = 0;
-  gnome.playScene.sound.play(gnome.mimi ? 'honkmimi' : 'honkshoo');
-}
 
-export function awake(gnome: Gnome) {
-  gnome.body.play('gnome-walk' + ageSuffix(gnome.age));
-  gnome.awake = true;
-  gnome.actionDurationTracker = 0;
-  gnome.foodInTumTum = 0;
+  gnome.playScene.sound.play('hatpop');
+
+  // Do animation for pooping a hat
+  gnome.hat.setVisible(false);
+  gnome.hatDecoration.setVisible(false);
+
+  gnome.body.play('gnome-lay-hat' + ageSuffix(gnome.age));
+  gnome.body.chain('gnome-sleep' + ageSuffix(gnome.age));
+
+  gnome.body.once(
+    Phaser.Animations.Events.ANIMATION_COMPLETE_KEY +
+      'gnome-lay-hat' +
+      ageSuffix(gnome.age),
+    () => {
+      gnome.playScene.spawnHat(
+        gnome.container.x,
+        gnome.container.y,
+        gnome.shapeGene,
+        gnome.colorGene,
+        gnome.decorationGene,
+      );
+
+      gnome.playScene.sound.play(gnome.mimi ? 'honkmimi' : 'honkshoo');
+    },
+  );
+
+  gnome.body.once(
+    Phaser.Animations.Events.ANIMATION_COMPLETE_KEY +
+      'gnome-sleep' +
+      ageSuffix(gnome.age),
+    () => {
+      gnome.awake = true;
+      gnome.actionDurationTracker = 0;
+      gnome.hat.setVisible(true);
+      gnome.hatDecoration.setVisible(true);
+    },
+  );
 }
 
 function ageSuffix(age: number) {

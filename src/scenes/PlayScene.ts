@@ -225,7 +225,7 @@ export default class PlayScreen extends Phaser.Scene {
     const hatShapeA = must(
       'load-hat-shape-a',
       this.anims.create({
-        key: 'hat-shape-1',
+        key: 'hat-shape-0',
         frameRate: 0,
         repeat: -1,
         frames: this.anims.generateFrameNames(hatTexture.key, {
@@ -237,7 +237,7 @@ export default class PlayScreen extends Phaser.Scene {
     const hatShapeB = must(
       'load-hat-shape-b',
       this.anims.create({
-        key: 'hat-shape-2',
+        key: 'hat-shape-1',
         frameRate: 0,
         repeat: -1,
         frames: this.anims.generateFrameNames(hatTexture.key, {
@@ -249,7 +249,7 @@ export default class PlayScreen extends Phaser.Scene {
     const hatShapeC = must(
       'load-hat-shape-c',
       this.anims.create({
-        key: 'hat-shape-3',
+        key: 'hat-shape-2',
         frameRate: 0,
         repeat: -1,
         frames: this.anims.generateFrameNames(hatTexture.key, {

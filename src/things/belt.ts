@@ -66,7 +66,7 @@ export function createBelt(
             gameState,
             assets,
             0,
-            WINDOW_HEIGHT - 68,
+            WINDOW_HEIGHT - beltHeight / 2,
             add,
             physics,
             getRandomItemType(),

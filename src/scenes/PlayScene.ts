@@ -535,6 +535,8 @@ export default class PlayScreen extends Phaser.Scene {
   spawnHat(
     x: number,
     y: number,
+    vx: number,
+    vy: number,
     shapeGene: HatShape,
     colorGene: HatColor,
     decorationGene: HatDecoration,
@@ -544,11 +546,15 @@ export default class PlayScreen extends Phaser.Scene {
         x,
         y,
         this.add,
+        this.physics,
         shapeGene,
         colorGene,
         decorationGene,
         this.gameState,
         this,
+        true,
+        vx,
+        vy,
       ),
     );
   }
@@ -575,6 +581,7 @@ export default class PlayScreen extends Phaser.Scene {
       32,
       32,
       this.add,
+      this.physics,
       this.gameState,
       this,
     );

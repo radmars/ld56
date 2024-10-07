@@ -1,4 +1,4 @@
-import { GameObjects, Input } from 'phaser';
+import { GameObjects, Input, Physics } from 'phaser';
 import PlayScene, { GameState } from '@/scenes/PlayScene';
 import { sellHat } from './sellbox';
 
@@ -22,6 +22,8 @@ export enum HatDecoration {
 
 export const HatZone = 'TheHatZone';
 
+export const initHatSpeed = 300;
+
 export interface Hat {
   shape: HatShape;
   color: HatColor;
@@ -36,12 +38,15 @@ export function createHat(
   x: number,
   y: number,
   add: GameObjects.GameObjectFactory,
+  physics: Physics.Arcade.ArcadePhysics,
   pShape: HatShape,
   pColor: HatColor,
   pDecoration: HatDecoration,
   gameState: GameState,
   playScene: PlayScene,
-  interactable: boolean = true,
+  interactable: boolean,
+  vx: number = 0,
+  vy: number = 0,
 ): Hat {
   const sprite = add.sprite(0, 0, playScene.gameAssets!.hatTexture, 3 + pShape);
   const decorationSprite = add.sprite(
@@ -51,7 +56,7 @@ export function createHat(
     pDecoration,
   );
 
-  //Color the hat
+  // Color the hat
   switch (pColor) {
     case HatColor.a:
       sprite.setTint(0xdc3333);
@@ -68,6 +73,10 @@ export function createHat(
   container.add([sprite, decorationSprite]);
   container.setSize(64, 64);
   container.setInteractive({ draggable: true });
+
+  physics.add.existing(container);
+  const body = container.body as Physics.Arcade.Body;
+  body.setVelocity(vx, vy).setDrag(Math.abs(vx), Math.abs(vy));
 
   const hat: Hat = {
     shape: pShape,
@@ -127,8 +136,8 @@ export function createHat(
             return h.zone == target;
           });
           if (h) {
-            //Do had seggs
-            //TODO some sort of hat breeding animation/payoff before spawning gnome?
+            // Do had seggs
+            // TODO: some sort of hat breeding animation/payoff before spawning gnome?
 
             destroyHatAndEverythingItStandsFor(h);
             destroyHatAndEverythingItStandsFor(hat);

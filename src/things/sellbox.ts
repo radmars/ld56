@@ -1,6 +1,6 @@
 // https://phaser.io/examples/v3.85.0/input/zones/view/circular-drop-zone
 import type { GameAssets, GameState } from '@/scenes/PlayScene';
-import { type GameObjects } from 'phaser';
+import { Physics, type GameObjects } from 'phaser';
 import {
   compareHat,
   createHat,
@@ -22,6 +22,7 @@ export function createSellBox(
   x: number,
   y: number,
   add: GameObjects.GameObjectFactory,
+  physics: Physics.Arcade.ArcadePhysics,
   gameState: GameState,
   playScene: PlayScene,
 ): SellBox {
@@ -30,7 +31,7 @@ export function createSellBox(
 
   const zone = add.zone(x, y, 64, 64).setRectangleDropZone(64, 64);
 
-  const hat = orderHat(x, y, add, gameState, playScene);
+  const hat = orderHat(x, y, add, physics, gameState, playScene);
 
   return {
     sprite,
@@ -49,6 +50,7 @@ function orderHat(
   x: number,
   y: number,
   add: GameObjects.GameObjectFactory,
+  physics: Physics.Arcade.ArcadePhysics,
   gameState: GameState,
   playScene: PlayScene,
 ): Hat {
@@ -56,6 +58,7 @@ function orderHat(
     x + 100,
     y,
     add,
+    physics,
     Phaser.Math.Between(0, 2),
     Phaser.Math.Between(0, 2),
     Phaser.Math.Between(0, 2),
@@ -72,6 +75,7 @@ export function sellHat(
   sellbox: SellBox,
   gameState: GameState,
   add: GameObjects.GameObjectFactory,
+  physics: Physics.Arcade.ArcadePhysics,
   playScene: PlayScene,
 ) {
   if (compareHat(hat, sellbox.hatOrder)) {
@@ -81,6 +85,7 @@ export function sellHat(
       sellbox.sprite.x,
       sellbox.sprite.y,
       add,
+      physics,
       gameState,
       playScene,
     );

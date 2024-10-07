@@ -20,6 +20,12 @@ export const getConfig = (): Phaser.Types.Core.GameConfig => {
     width: WINDOW_WIDTH,
     height: WINDOW_HEIGHT,
     pixelArt: true,
+    physics: {
+      default: 'arcade',
+      arcade: {
+        // debug: true,
+      },
+    },
     scene: [
       ...(!devMode ? [new RadmarsScreen()] : []),
       new PlayScene(),

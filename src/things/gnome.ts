@@ -2,7 +2,7 @@ import type { GameAssets } from '@/scenes/PlayScene';
 import { type GameObjects } from 'phaser';
 import { ItemType } from '@/things//item';
 import PlayScene from '@/scenes/PlayScene';
-import { HatColor, HatDecoration, HatShape } from './hat';
+import { HatColor, HatDecoration, HatShape, initHatSpeed } from './hat';
 
 export const gnomeSize = 64;
 const hatOffset = -14;
@@ -262,9 +262,13 @@ export function layHat(gnome: Gnome) {
       'gnome-lay-hat' +
       ageSuffix(gnome.age),
     () => {
+      const v = new Phaser.Math.Vector2();
+      Phaser.Math.RandomXY(v, initHatSpeed);
       gnome.playScene.spawnHat(
         gnome.container.x,
         gnome.container.y,
+        v.x,
+        v.y,
         gnome.shapeGene,
         gnome.colorGene,
         gnome.decorationGene,

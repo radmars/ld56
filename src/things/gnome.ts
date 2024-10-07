@@ -89,6 +89,7 @@ export function createGnome(
     container,
     body,
     hat,
+    hatDecoration,
     heading: new Phaser.Math.Vector2(1, 0),
     speed: 0,
     actionDurationTracker: 0,

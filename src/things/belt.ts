@@ -1,4 +1,4 @@
-import { Time, type GameObjects } from 'phaser';
+import { Physics, Time, type GameObjects } from 'phaser';
 import {
   beltItemMove,
   createConveyorBeltItem,
@@ -33,6 +33,7 @@ function getRandomItemType(): ItemType {
 export function createBelt(
   gameState: GameState,
   add: GameObjects.GameObjectFactory,
+  physics: Physics.Arcade.ArcadePhysics,
   assets: GameAssets,
   time: Time.Clock,
   playScene: PlayScene,
@@ -50,6 +51,7 @@ export function createBelt(
             0,
             WINDOW_HEIGHT - 68,
             add,
+            physics,
             getRandomItemType(),
             playScene,
           ),

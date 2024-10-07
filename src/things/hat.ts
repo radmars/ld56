@@ -1,6 +1,7 @@
 import { GameObjects, Input, Physics } from 'phaser';
 import PlayScene, { GameState } from '@/scenes/PlayScene';
 import { sellHat } from './sellbox';
+import { chuckRandom } from './physics';
 
 export enum HatShape {
   Cone,
@@ -21,8 +22,6 @@ export enum HatDecoration {
 }
 
 export const HatZone = 'TheHatZone';
-
-export const initHatSpeed = 300;
 
 export interface Hat {
   shape: HatShape;
@@ -45,8 +44,7 @@ export function createHat(
   gameState: GameState,
   playScene: PlayScene,
   interactable: boolean,
-  vx: number = 0,
-  vy: number = 0,
+  chuck: boolean,
 ): Hat {
   const sprite = add.sprite(0, 0, playScene.gameAssets!.hatTexture, 3 + pShape);
   const decorationSprite = add.sprite(
@@ -76,10 +74,11 @@ export function createHat(
 
   physics.add.existing(container);
   const body = container.body as Physics.Arcade.Body;
-  body
-    .setVelocity(vx, vy)
-    .setDrag(Math.abs(vx), Math.abs(vy))
-    .setCollideWorldBounds(true, 1, 1, true);
+  body.setCollideWorldBounds(true, 1, 1, true);
+
+  if (chuck) {
+    chuckRandom(body);
+  }
 
   const hat: Hat = {
     shape: pShape,
@@ -184,7 +183,10 @@ export function destroyHatAndEverythingItStandsFor(h: Hat) {
 function determineHatShapeGene(catcher: Hat, pitcher: Hat): HatShape {
   if (catcher.shape == HatShape.Wizard || pitcher.shape == HatShape.Wizard) {
     return HatShape.Wizard;
-  } else if (catcher.shape == HatShape.Floppy || pitcher.shape == HatShape.Floppy) {
+  } else if (
+    catcher.shape == HatShape.Floppy ||
+    pitcher.shape == HatShape.Floppy
+  ) {
     return HatShape.Floppy;
   }
 

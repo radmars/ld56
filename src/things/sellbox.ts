@@ -65,6 +65,7 @@ function orderHat(
     gameState,
     playScene,
     false,
+    false,
   );
 
   return newOrder;

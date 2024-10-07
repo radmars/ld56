@@ -2,7 +2,7 @@ import type { GameAssets } from '@/scenes/PlayScene';
 import { type GameObjects } from 'phaser';
 import { ItemType } from '@/things//item';
 import PlayScene from '@/scenes/PlayScene';
-import { HatColor, HatDecoration, HatShape, initHatSpeed } from './hat';
+import { HatColor, HatDecoration, HatShape } from './hat';
 
 export const gnomeSize = 64;
 const hatOffset = -14;
@@ -49,7 +49,7 @@ export interface Gnome {
   add: GameObjects.GameObjectFactory;
 }
 
-function updateHat(gnome: Gnome) {
+export function updateHat(gnome: Gnome) {
   if (gnome.hat) {
     gnome.hat.destroy();
   }
@@ -225,28 +225,8 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
     case ItemType.Mushroom:
       gnome.colorGene = HatColor.Red;
       break;
-    case ItemType.Eraser:
-      gnome.decorationGene = HatDecoration.None;
-      break;
-    case ItemType.TrafficCone:
-      gnome.shapeGene = HatShape.Cone;
-      break;
-    case ItemType.Birdbath:
-      gnome.colorGene = HatColor.Blue;
-      break;
     case ItemType.MoonCookie:
       gnome.decorationGene = HatDecoration.Moon;
-      break;
-    case ItemType.Rock:
-      gnome.shapeGene = HatShape.Floppy;
-      break;
-    case ItemType.PhilStone:
-      gnome.colorGene = HatColor.Gold;
-      gnome.playScene.sound.play('magic');
-      break;
-    case ItemType.Wand:
-      gnome.decorationGene = HatDecoration.Star;
-      gnome.playScene.sound.play('magic');
       break;
     case ItemType.Potion:
       gnome.shapeGene = HatShape.Wizard;
@@ -299,13 +279,10 @@ export function layHat(gnome: Gnome) {
       ageSuffix(gnome.age),
     () => {
       blood.stop();
-      const v = new Phaser.Math.Vector2();
-      Phaser.Math.RandomXY(v, initHatSpeed);
+
       gnome.playScene.spawnHat(
         gnome.container.x,
         gnome.container.y,
-        v.x,
-        v.y,
         gnome.shapeGene,
         gnome.colorGene,
         gnome.decorationGene,
@@ -366,3 +343,7 @@ function becomeDead(g: Gnome) {
   g.awaitingReaper = true;
   g.playScene.sound.play('die');
 }
+
+// case ItemType.Birdbath:
+//   gnome.colorGene = HatColor.Blue;
+//   break;

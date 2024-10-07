@@ -1,9 +1,11 @@
 import { WINDOW_WIDTH } from '@/config';
 import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import PlayScene from '@/scenes/PlayScene';
-import { Input, type GameObjects, type Textures } from 'phaser';
-import { feedGnome, GnomeZone } from './gnome';
+import { Input, Physics, type GameObjects, type Textures } from 'phaser';
+import { feedGnome, GnomeZone, updateHat } from './gnome';
 import { Belt } from './belt';
+import { HatColor, HatDecoration, HatShape } from './hat';
+import { chuckRandom } from './physics';
 
 export enum ItemType {
   Rat,
@@ -16,6 +18,12 @@ export enum ItemType {
   PhilStone,
   Wand,
   Potion,
+}
+
+export enum ItemUse {
+  Food,
+  Rub,
+  // Dunk,
 }
 
 export interface ConveyorBeltItem {
@@ -78,6 +86,26 @@ function getItemTypeIcon(
       return assets.potionTexture;
   }
 }
+
+function getItemUse(itemType: ItemType): ItemUse {
+  switch (itemType) {
+    case ItemType.Rat:
+    case ItemType.Mushroom:
+    case ItemType.MoonCookie:
+    case ItemType.Potion:
+      return ItemUse.Food;
+    case ItemType.Eraser:
+    case ItemType.TrafficCone:
+    case ItemType.Rock:
+    case ItemType.PhilStone:
+    case ItemType.Wand:
+    case ItemType.Birdbath:
+      return ItemUse.Rub;
+    // case ItemType.Birdbath:
+    //     return ItemUse.Dunk;
+  }
+}
+
 export interface Item {
   itemType: ItemType;
   sprite: GameObjects.Sprite;
@@ -89,16 +117,24 @@ export function createConveyorBeltItem(
   x: number,
   y: number,
   add: GameObjects.GameObjectFactory,
+  physics: Physics.Arcade.ArcadePhysics,
   itemType: ItemType,
   playScene: PlayScene,
 ): ConveyorBeltItem {
   const sprite = add.sprite(x, y, assets.unselectedButton, 0);
 
-  const itemSprite = add.sprite(x, y, getItemTypeIcon(itemType, assets), 0);
+  const itemSprite = physics.add.sprite(
+    x,
+    y,
+    getItemTypeIcon(itemType, assets).key,
+    0,
+  );
   itemSprite.setInteractive({ draggable: true });
 
   const price = getItemPrice(itemType);
   const priceText = `$${price}`;
+
+  const itemUse = getItemUse(itemType);
 
   const text = add.text(x, y + 32, priceText);
   text.setOrigin(0.5, 0);
@@ -140,11 +176,44 @@ export function createConveyorBeltItem(
           return g.zone == target;
         });
         if (g) {
-          if (feedGnome(g, item.itemType)) {
-            item.sprite.destroy();
+          switch (itemUse) {
+            case ItemUse.Food:
+              if (feedGnome(g, item.itemType)) {
+                item.sprite.destroy();
+              }
+              break;
+            case ItemUse.Rub:
+              switch (item.itemType) {
+                case ItemType.Eraser:
+                  g.decorationGene = HatDecoration.None;
+                  break;
+                case ItemType.TrafficCone:
+                  g.shapeGene = HatShape.Cone;
+                  break;
+                case ItemType.Rock:
+                  g.shapeGene = HatShape.Floppy;
+                  break;
+                case ItemType.Birdbath:
+                  g.colorGene = HatColor.Blue;
+                  break;
+                case ItemType.PhilStone:
+                  g.colorGene = HatColor.Gold;
+                  g.playScene.sound.play('magic');
+                  break;
+                case ItemType.Wand:
+                  g.decorationGene = HatDecoration.Star;
+                  g.playScene.sound.play('magic');
+                  break;
+              }
+
+              updateHat(g);
+              itemSprite.body.setCollideWorldBounds(true, 1, 1, true);
+              chuckRandom(itemSprite.body);
+              break;
           }
         }
       }
+
       playScene.sound.play('drop');
     },
   );

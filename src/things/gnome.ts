@@ -5,7 +5,7 @@ import PlayScene from '@/scenes/PlayScene';
 
 const walkDuration: number = 1000;
 const pauseDuration: number = 1500;
-const sleepDuration: number = 10000;
+const sleepDuration: number = 5000;
 const walkSpeed: number = 0.05;
 const poopThreshold: integer = 3;
 const oldAge = 10_000;

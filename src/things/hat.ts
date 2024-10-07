@@ -1,4 +1,4 @@
-import { Input, type GameObjects } from 'phaser';
+import { GameObjects, Input } from 'phaser';
 import PlayScene, { GameState } from '@/scenes/PlayScene';
 
 export enum HatShape {
@@ -26,7 +26,7 @@ export interface Hat {
   color: HatColor;
   decoration: HatDecoration;
   sprite: GameObjects.Sprite;
-  zone: GameObjects.Zone;
+  zone?: GameObjects.Zone;
 }
 
 export function createHat(
@@ -61,6 +61,7 @@ export function createHat(
     (_: Input.Pointer, dragX: number, dragY: number) => {
       sprite.x = dragX;
       sprite.y = dragY;
+      zone.destroy();
     },
   );
   sprite.on(
@@ -79,10 +80,18 @@ export function createHat(
       }
     },
   );
+  sprite.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
+    console.log(`putting hat zone back`);
+    hat.zone = add
+      .zone(sprite.x, sprite.y, 32, 32)
+      .setRectangleDropZone(32, 32);
+    hat.zone.setName(HatZone);
+    sprite.setAbove(hat.zone);
+  });
   sprite.on(
     Input.Events.GAMEOBJECT_DROP,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
-      console.log(`Deopping hat on  ${target.name}`);
+      console.log(`Dropping hat on `, target.name);
       if (target == gameState.sellBox?.zone) {
         gameState.sellBox?.hoverLeave();
         sprite.destroy();
@@ -94,13 +103,25 @@ export function createHat(
           //Do had seggs
           //TODO some sort of hat breeding animation/payoff before spawning gnome?
 
-          h.sprite.destroy();
-          sprite.destroy();
+          destroyHatAndEverythingItStandsFor(h);
+          destroyHatAndEverythingItStandsFor(hat);
           playScene.spawnGnome(h.sprite.x, h.sprite.y);
         }
+      } else {
+        console.log(`putting hat zone back`);
+        hat.zone = add
+          .zone(sprite.x, sprite.y, 32, 32)
+          .setRectangleDropZone(32, 32);
+        hat.zone.setName(HatZone);
+        sprite.setAbove(hat.zone);
       }
     },
   );
 
   return hat;
+}
+
+function destroyHatAndEverythingItStandsFor(h: Hat) {
+  h.sprite.destroy();
+  h.zone?.destroy();
 }

@@ -224,7 +224,6 @@ export function feedGnome(gnome: Gnome, itemType: ItemType) {
   }
 
   gnome.playScene.sound.play('eat');
-
   gnome.foodInTumTum++;
 
   // Apply mutations
@@ -281,13 +280,21 @@ export function layHat(gnome: Gnome) {
     },
   );
 
+  const bleedAnimation = gnome.playScene.anims.get(
+    'gnome-lay-hat' + ageSuffix(gnome.age),
+  );
+  const bleedDuration =
+    (1_000 * bleedAnimation.frames.length * bleedAnimation.repeat) /
+    bleedAnimation.frameRate;
+
+  // Separated in case the gnome dies during the animation, to prevent eternal geysers.
+  setTimeout(() => blood.stop(), bleedDuration);
+
   gnome.body.once(
     Phaser.Animations.Events.ANIMATION_COMPLETE_KEY +
       'gnome-lay-hat' +
       ageSuffix(gnome.age),
     () => {
-      blood.stop();
-
       gnome.playScene.spawnHat(
         gnome.container.x,
         gnome.container.y,

@@ -47,6 +47,10 @@ export interface GameAssets {
   hatShapeA: Animations.Animation;
   hatShapeB: Animations.Animation;
   hatShapeC: Animations.Animation;
+  hatDecorationTexture: Textures.Texture;
+  hatDecorationA: Animations.Animation;
+  hatDecorationB: Animations.Animation;
+  hatDecorationC: Animations.Animation;
   gnomeYoungIdleAnimation: Animations.Animation;
   ratTexture: Textures.Texture;
   mushroomTexture: Textures.Texture;
@@ -98,6 +102,14 @@ export default class PlayScreen extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 32,
     });
+    this.load.spritesheet(
+      'hat-decorations',
+      'assets/game/hat_decorations.png',
+      {
+        frameWidth: 32,
+        frameHeight: 32,
+      },
+    );
     this.load.spritesheet('rat', 'assets/game/rat.png', {
       frameWidth: 64,
       frameHeight: 64,
@@ -208,6 +220,7 @@ export default class PlayScreen extends Phaser.Scene {
     const backgroundTexture = this.textures.get('bg');
     const gnomeBodyTexture = this.textures.get('gnome-body');
     const hatTexture = this.textures.get('hat');
+    const hatDecorationTexture = this.textures.get('hat-decorations');
     const ratTexture = this.textures.get('rat');
     const mushroomTexture = this.textures.get('mushroom');
     const eraserTexture = this.textures.get('eraser');
@@ -253,6 +266,45 @@ export default class PlayScreen extends Phaser.Scene {
         frameRate: 0,
         repeat: -1,
         frames: this.anims.generateFrameNames(hatTexture.key, {
+          start: 2,
+          end: 2,
+        }),
+      }),
+    );
+
+    const hatDecorationA = must(
+      'load-hat-decoration-a',
+      this.anims.create({
+        key: 'hat-decoration-0',
+        frameRate: 0,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(hatDecorationTexture.key, {
+          start: 0,
+          end: 0,
+        }),
+      }),
+    );
+
+    const hatDecorationB = must(
+      'load-hat-decoration-b',
+      this.anims.create({
+        key: 'hat-decoration-1',
+        frameRate: 0,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(hatDecorationTexture.key, {
+          start: 1,
+          end: 1,
+        }),
+      }),
+    );
+
+    const hatDecorationC = must(
+      'load-hat-decoration-c',
+      this.anims.create({
+        key: 'hat-decoration-2',
+        frameRate: 0,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(hatDecorationTexture.key, {
           start: 2,
           end: 2,
         }),
@@ -373,6 +425,10 @@ export default class PlayScreen extends Phaser.Scene {
       hatShapeA,
       hatShapeB,
       hatShapeC,
+      hatDecorationTexture,
+      hatDecorationA,
+      hatDecorationB,
+      hatDecorationC,
       gnomeYoungIdleAnimation,
       ratTexture,
       mushroomTexture,

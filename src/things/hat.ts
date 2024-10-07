@@ -26,6 +26,7 @@ export interface Hat {
   color: HatColor;
   decoration: HatDecoration;
   sprite: GameObjects.Sprite;
+  decorationSprite: GameObjects.Image;
   zone?: GameObjects.Zone;
 }
 
@@ -39,32 +40,39 @@ export function createHat(
   gameState: GameState,
   playScene: PlayScene,
 ): Hat {
-  const sprite = add.sprite(x, y, playScene.gameAssets!.hatTexture, 4);
+  const sprite = add.sprite(x, y, playScene.gameAssets!.hatTexture, 3 + pShape);
   sprite.setInteractive({ draggable: true });
+  const decorationSprite = add.sprite(
+    x,
+    y,
+    playScene.gameAssets!.hatDecorationTexture,
+    pDecoration,
+  );
 
+  //Color the hat
   switch (pColor) {
     case HatColor.a:
-      sprite.setTint(0xff0000);
+      sprite.setTint(0xdc3333);
       break;
     case HatColor.b:
-      sprite.setTint(0x0000ff);
+      sprite.setTint(0x5b6ee1);
       break;
     case HatColor.c:
-      sprite.setTint(0xffd700);
+      sprite.setTint(0xfbca16);
       break;
   }
 
-  sprite.play('hat-shape-' + pShape);
 
   const zone = add.zone(x, y, 32, 32).setRectangleDropZone(32, 32);
   zone.setName(HatZone);
   sprite.setAbove(zone);
 
   const hat: Hat = {
-    sprite,
     shape: pShape,
     color: pColor,
     decoration: pDecoration,
+    sprite,
+    decorationSprite,
     zone,
   };
 

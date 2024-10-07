@@ -51,7 +51,18 @@ export function createGnome(
   decorationGene: HatDecoration,
 ): Gnome {
   const body = add.sprite(0, 0, assets.gnomeBodyTexture.key);
-  const hat = add.image(0, -19, assets.hatTexture.key, 0);
+  const hat = add.sprite(0, -19, assets.hatTexture.key, shapeGene);
+  switch (colorGene) {
+    case HatColor.a:
+      hat.setTint(0xdc3333);
+      break;
+    case HatColor.b:
+      hat.setTint(0x5b6ee1);
+      break;
+    case HatColor.c:
+      hat.setTint(0xffd700);
+      break;
+  }
 
   const container = add.container(x, y, [body, hat]);
   container.setSize(32, 32);

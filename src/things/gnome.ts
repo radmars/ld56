@@ -87,6 +87,7 @@ export function updateHat(gnome: Gnome) {
   }
 
   gnome.container.add([gnome.hat, gnome.hatDecoration]);
+  setHatVisibility(gnome, gnome.foodInTumTum > 1);
 }
 
 export function createGnome(
@@ -195,7 +196,9 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
     if (gnome.speed > 0) {
       gnome.speed = 0;
       gnome.actionDurationTracker = pauseDuration;
-      gnome.body.play('gnome-idle' + ageSuffix(gnome.age));
+      gnome.body.play(
+        'gnome-idle' + ageSuffix(gnome.age) + fedSuffix(gnome.foodInTumTum),
+      );
     } else {
       gnome.speed = walkSpeed;
       if (gnome.age > oldAge) {
@@ -205,7 +208,9 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
       gnome.actionDurationTracker = walkDuration;
       // Pick a new direction to walk
       gnome.heading.rotate(Phaser.Math.Between(0, 360));
-      gnome.body.play('gnome-walk' + ageSuffix(gnome.age));
+      gnome.body.play(
+        'gnome-walk' + ageSuffix(gnome.age) + fedSuffix(gnome.foodInTumTum),
+      );
     }
   }
 
@@ -319,6 +324,14 @@ function ageSuffix(age: number) {
   }
 }
 
+function fedSuffix(foodInTumTum: number) {
+  if (foodInTumTum >= 1) {
+    return '-cone';
+  }
+
+  return '';
+}
+
 function becomeMiddle(g: Gnome) {
   g.hat.y = hatOffset + ageOffset;
   g.hatDecoration.y = decorationOffset + ageOffset;
@@ -340,6 +353,9 @@ function becomeOld(g: Gnome) {
 
 // We may want to use an object pool for this
 function becomeDead(g: Gnome) {
+  if (g.foodInTumTum >= 2) {
+    layHat(g);
+  }
   g.awake = false; // Alas, this is forever
   g.body.play('gnome-die');
   g.hat.setVisible(false);
@@ -357,6 +373,11 @@ function becomeDead(g: Gnome) {
       g.playScene.sound.play('die');
     },
   );
+}
+
+function setHatVisibility(g: Gnome, visible: boolean) {
+  g.hat.visible = visible;
+  g.hatDecoration.visible = visible;
 }
 
 // case ItemType.Birdbath:

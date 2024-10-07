@@ -68,6 +68,13 @@ export interface GameAssets {
   gnomeOldLayHatAnimation: Animations.Animation;
   gnomeOldSleepAnimation: Animations.Animation;
   gnomeDieAnimation: Animations.Animation;
+
+  gnomeYoungConeIdleAnimation: Animations.Animation;
+  gnomeYoungConeWalkAnimation: Animations.Animation;
+  gnomeMiddleConeIdleAnimation: Animations.Animation;
+  gnomeMiddleConeWalkAnimation: Animations.Animation;
+  gnomeOldConeIdleAnimation: Animations.Animation;
+  gnomeOldConeWalkAnimation: Animations.Animation;
 }
 
 const must = <T>(what: string, thing: T | false): T => {
@@ -413,6 +420,84 @@ export default class PlayScreen extends Phaser.Scene {
       }),
     );
 
+    const gnomeYoungConeIdleAnimation = must(
+      'load-gnome-idle-young-cone',
+      this.anims.create({
+        key: 'gnome-idle-young-cone',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 14,
+          end: 14,
+        }),
+      }),
+    );
+
+    const gnomeMiddleConeIdleAnimation = must(
+      'load-gnome-idle-middle-cone',
+      this.anims.create({
+        key: 'gnome-idle-middle-cone',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 0,
+          end: 0,
+        }),
+      }),
+    );
+
+    const gnomeOldConeIdleAnimation = must(
+      'load-gnome-idle-old-cone',
+      this.anims.create({
+        key: 'gnome-idle-old-cone',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 7,
+          end: 7,
+        }),
+      }),
+    );
+
+    const gnomeYoungConeWalkAnimation = must(
+      'load-gnome-walk-young-cone',
+      this.anims.create({
+        key: 'gnome-walk-young-cone',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 19,
+          end: 20,
+        }),
+      }),
+    );
+
+    const gnomeMiddleConeWalkAnimation = must(
+      'load-gnome-walk-middle-cone',
+      this.anims.create({
+        key: 'gnome-walk-middle-cone',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 1,
+          end: 2,
+        }),
+      }),
+    );
+
+    const gnomeOldConeWalkAnimation = must(
+      'load-gnome-walk-old-cone',
+      this.anims.create({
+        key: 'gnome-walk-old-cone',
+        frameRate: 10,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(gnomeBodyTexture.key, {
+          start: 8,
+          end: 9,
+        }),
+      }),
+    );
+
     const hatLayRate = 40;
     const hatLayRepeats = 40;
 
@@ -535,6 +620,14 @@ export default class PlayScreen extends Phaser.Scene {
       gnomeMiddleSleepAnimation,
       gnomeOldIdleAnimation,
       gnomeOldWalkAnimation,
+
+      gnomeYoungConeIdleAnimation,
+      gnomeYoungConeWalkAnimation,
+      gnomeMiddleConeIdleAnimation,
+      gnomeMiddleConeWalkAnimation,
+      gnomeOldConeIdleAnimation,
+      gnomeOldConeWalkAnimation,
+
       gnomeOldLayHatAnimation,
       gnomeOldSleepAnimation,
       gnomeDieAnimation,
@@ -673,7 +766,7 @@ export default class PlayScreen extends Phaser.Scene {
     }, this);
 
     this.gameState.hats.forEach(function (hat) {
-      updateHat(hat, delta);
+      updateHat(hat);
     }, this);
   }
 }

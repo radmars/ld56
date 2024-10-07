@@ -26,8 +26,9 @@ export interface Hat {
   color: HatColor;
   decoration: HatDecoration;
   sprite: GameObjects.Sprite;
-  decorationSprite: GameObjects.Image;
+  decorationSprite: GameObjects.Sprite;
   zone?: GameObjects.Zone;
+  container: GameObjects.Container;
 }
 
 export function createHat(
@@ -40,11 +41,10 @@ export function createHat(
   gameState: GameState,
   playScene: PlayScene,
 ): Hat {
-  const sprite = add.sprite(x, y, playScene.gameAssets!.hatTexture, 3 + pShape);
-  sprite.setInteractive({ draggable: true });
+  const sprite = add.sprite(0, 0, playScene.gameAssets!.hatTexture, 3 + pShape);
   const decorationSprite = add.sprite(
-    x,
-    y,
+    0,
+    0,
     playScene.gameAssets!.hatDecorationTexture,
     pDecoration,
   );
@@ -62,10 +62,10 @@ export function createHat(
       break;
   }
 
-
-  const zone = add.zone(x, y, 32, 32).setRectangleDropZone(32, 32);
-  zone.setName(HatZone);
-  sprite.setAbove(zone);
+  const container = add.container(x, y);
+  container.add([sprite, decorationSprite]);
+  container.setSize(32, 32);
+  container.setInteractive({ draggable: true });
 
   const hat: Hat = {
     shape: pShape,
@@ -73,22 +73,24 @@ export function createHat(
     decoration: pDecoration,
     sprite,
     decorationSprite,
-    zone,
+    container,
   };
 
-  sprite.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
+  enableZone(hat, add);
+
+  container.on(Input.Events.GAMEOBJECT_DRAG_START, () => {
     playScene.sound.play('pickup');
   });
 
-  sprite.on(
+  container.on(
     Input.Events.GAMEOBJECT_DRAG,
     (_: Input.Pointer, dragX: number, dragY: number) => {
-      sprite.x = dragX;
-      sprite.y = dragY;
-      zone.destroy();
+      container.x = dragX;
+      container.y = dragY;
+      disableZone(hat);
     },
   );
-  sprite.on(
+  container.on(
     Input.Events.GAMEOBJECT_DRAG_LEAVE,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
       if (target == gameState.sellBox?.zone) {
@@ -96,7 +98,7 @@ export function createHat(
       }
     },
   );
-  sprite.on(
+  container.on(
     Input.Events.GAMEOBJECT_DRAG_ENTER,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
       if (target == gameState.sellBox?.zone) {
@@ -104,16 +106,12 @@ export function createHat(
       }
     },
   );
-  sprite.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
+  container.on(Input.Events.GAMEOBJECT_DRAG_END, () => {
     console.log(`putting hat zone back`);
-    hat.zone = add
-      .zone(sprite.x, sprite.y, 32, 32)
-      .setRectangleDropZone(32, 32);
-    hat.zone.setName(HatZone);
-    sprite.setAbove(hat.zone);
+    enableZone(hat, add);
     playScene.sound.play('drop');
   });
-  sprite.on(
+  container.on(
     Input.Events.GAMEOBJECT_DROP,
     (_: Input.Pointer, target: GameObjects.GameObject) => {
       console.log(`Dropping hat on `, target.name);
@@ -134,8 +132,8 @@ export function createHat(
           destroyHatAndEverythingItStandsFor(hat);
           playScene.sound.play('hatgrow');
           playScene.spawnGnome(
-            h.sprite.x,
-            h.sprite.y,
+            h.container.x,
+            h.container.y,
             determineHatShapeGene(h, hat),
             determineHatColorGene(h, hat),
             determineHatDecorationGene(h, hat),
@@ -143,11 +141,8 @@ export function createHat(
         }
       } else {
         console.log(`putting hat zone back`);
-        hat.zone = add
-          .zone(sprite.x, sprite.y, 32, 32)
-          .setRectangleDropZone(32, 32);
-        hat.zone.setName(HatZone);
-        sprite.setAbove(hat.zone);
+
+        enableZone(hat, add);
       }
     },
   );
@@ -155,9 +150,22 @@ export function createHat(
   return hat;
 }
 
+function disableZone(hat: Hat) {
+  hat.zone?.destroy();
+}
+
+function enableZone(hat: Hat, add: GameObjects.GameObjectFactory) {
+  hat.zone = add
+    .zone(hat.container.x, hat.container.y, 32, 32)
+    .setRectangleDropZone(32, 32);
+  hat.zone.setName(HatZone);
+
+  hat.container.setAbove(hat.zone);
+}
+
 function destroyHatAndEverythingItStandsFor(h: Hat) {
-  h.sprite.destroy();
   h.zone?.destroy();
+  h.container.destroy();
 }
 
 function determineHatShapeGene(catcher: Hat, pitcher: Hat): HatShape {

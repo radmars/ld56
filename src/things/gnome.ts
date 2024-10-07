@@ -337,8 +337,6 @@ export function layHat(gnome: Gnome) {
     () => {
       gnome.awake = true;
       gnome.actionDurationTracker = 0;
-      gnome.hat.setVisible(true);
-      gnome.hatDecoration.setVisible(true);
     },
   );
 }
@@ -383,7 +381,13 @@ function becomeOld(g: Gnome) {
 // We may want to use an object pool for this
 function becomeDead(g: Gnome) {
   if (g.foodInTumTum >= 2) {
-    layHat(g);
+    g.playScene.spawnHat(
+      g.container.x,
+      g.container.y,
+      g.shapeGene,
+      g.colorGene,
+      g.decorationGene,
+    );
   }
   g.awake = false; // Alas, this is forever
   g.body.play('gnome-die');

@@ -140,7 +140,7 @@ export function createConveyorBeltItem(
           return g.zone == target;
         });
         if (g) {
-          if (feedGnome(g, gameState, item.itemType)) {
+          if (feedGnome(g, item.itemType)) {
             item.sprite.destroy();
           }
         }

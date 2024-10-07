@@ -16,9 +16,9 @@ const pauseDuration: number = 1500;
 const walkSpeed: number = 0.05;
 const poopThreshold: integer = 3;
 
-const middleAge = 5_000;
-const oldAge = 10_000;
-const deathAge = 15_000;
+const middleAge = 60_000;
+const oldAge = 100_000;
+const deathAge = 120_000;
 
 const walkBoundsLeft = 50;
 const walkBoundsRight = 50;
@@ -65,7 +65,7 @@ export function createGnome(
     0,
     decorationOffset,
     assets.hatDecorationTexture.key,
-    decorationGene,
+    2 - decorationGene,
   );
   switch (colorGene) {
     case HatColor.a:
@@ -116,7 +116,7 @@ export function createGnome(
   // Aging
   time.delayedCall(middleAge, becomeMiddle, [gnome]);
   time.delayedCall(oldAge, becomeOld, [gnome]);
-  // time.delayedCall(deathAge, becomeDead, [gnome]);
+  time.delayedCall(deathAge, becomeDead, [gnome]);
 
   return gnome;
 }
@@ -170,6 +170,10 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
         gnome.body.play('gnome-idle' + ageSuffix(gnome.age));
       } else {
         gnome.speed = walkSpeed;
+        if (gnome.age > oldAge) {
+          gnome.speed /= 2;
+        }
+
         gnome.actionDurationTracker = walkDuration;
         // Pick a new direction to walk
         gnome.heading.rotate(Phaser.Math.Between(0, 360));
@@ -180,16 +184,6 @@ export function updateGnome(gnome: Gnome, deltaTime: number): void {
 
   gnome.zone.x = gnome.container.x;
   gnome.zone.y = gnome.container.y;
-}
-
-export function ungrabGnome(gnome: Gnome) {
-  gnome.grabbed = false;
-  gnome.playScene.sound.play('whoosh');
-}
-
-export function grabGnome(gnome: Gnome) {
-  gnome.grabbed = true;
-  gnome.playScene.sound.play('pickup');
 }
 
 export function feedGnome(gnome: Gnome, itemType: ItemType) {
@@ -257,11 +251,28 @@ export function layHat(gnome: Gnome) {
   gnome.body.play('gnome-lay-hat' + ageSuffix(gnome.age));
   gnome.body.chain('gnome-sleep' + ageSuffix(gnome.age));
 
+  const blood = gnome.playScene.add.particles(
+    gnome.container.x,
+    gnome.container.y - 20,
+    'hat',
+    {
+      frame: 0,
+      color: [0xff0000, 0x000000],
+      colorEase: 'quad.out',
+      lifespan: 2400,
+      angle: { min: -100, max: -80 },
+      scale: { start: 0.7, end: 0, ease: 'sine.out' },
+      speed: 400,
+      gravityY: 400,
+    },
+  );
+
   gnome.body.once(
     Phaser.Animations.Events.ANIMATION_COMPLETE_KEY +
       'gnome-lay-hat' +
       ageSuffix(gnome.age),
     () => {
+      blood.stop();
       const v = new Phaser.Math.Vector2();
       Phaser.Math.RandomXY(v, initHatSpeed);
       gnome.playScene.spawnHat(

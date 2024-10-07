@@ -53,7 +53,7 @@ export function createHat(
     0,
     15,
     playScene.gameAssets!.hatDecorationTexture,
-    pDecoration,
+    2 - pDecoration,
   );
 
   // Color the hat
@@ -127,7 +127,7 @@ export function createHat(
       (_: Input.Pointer, target: GameObjects.GameObject) => {
         console.log(`Dropping hat on `, target.name);
         if (target == gameState.sellBox?.zone) {
-          sellHat(hat, gameState.sellBox, gameState, add, playScene);
+          sellHat(hat, gameState.sellBox, gameState, add, physics, playScene);
           gameState.sellBox?.hoverLeave();
           destroyHatAndEverythingItStandsFor(hat);
           playScene.sound.play('sell');

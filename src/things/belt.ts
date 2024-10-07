@@ -17,15 +17,22 @@ export interface Belt {
 
 const available = [
   ItemType.Rat,
+  ItemType.Rat,
+  ItemType.Rat,
+  ItemType.Rat,
+  ItemType.Rat,
   ItemType.Mushroom,
+  ItemType.Mushroom,
+  ItemType.MoonCookie,
+  ItemType.MoonCookie,
+  ItemType.Potion,
+  ItemType.Potion,
   ItemType.Eraser,
   ItemType.TrafficCone,
   ItemType.Birdbath,
-  ItemType.MoonCookie,
   ItemType.Rock,
   ItemType.PhilStone,
   ItemType.Wand,
-  ItemType.Potion,
 ];
 
 export function removeFromAvailable(i: ItemType) {

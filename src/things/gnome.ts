@@ -2,6 +2,7 @@ import type { GameAssets, GameState } from '@/scenes/PlayScene';
 import { type GameObjects, type Physics } from 'phaser';
 import { ItemType } from '@/things//item';
 import PlayScene from '@/scenes/PlayScene';
+import { HatColor, HatDecoration, HatShape } from './hat';
 
 const walkDuration: number = 1000;
 const pauseDuration: number = 1500;
@@ -29,6 +30,9 @@ export interface Gnome {
   awaitingReaper: boolean;
   playScene: PlayScene;
   mimi: boolean;
+  shapeGene: HatShape;
+  colorGene: HatColor;
+  decorationGene: HatDecoration;
 }
 
 // drag/throw
@@ -42,6 +46,9 @@ export function createGnome(
   matter: Physics.Matter.MatterPhysics,
   time: Phaser.Time.Clock,
   pPlayscene: PlayScene,
+  shapeGene: HatShape,
+  colorGene: HatColor,
+  decorationGene: HatDecoration,
 ): Gnome {
   const body = add.sprite(0, 0, assets.gnomeBodyTexture.key);
   const hat = add.image(0, -19, assets.hatTexture.key, 0);
@@ -76,6 +83,9 @@ export function createGnome(
     awaitingReaper: false,
     playScene: pPlayscene,
     mimi: snoreType,
+    shapeGene: shapeGene,
+    colorGene: colorGene,
+    decorationGene: decorationGene,
   };
 
   // Aging
@@ -152,7 +162,13 @@ export function feedGnome(
     layHat(gnome);
     //TODO if gnome is old, die otherwise sleep
     sleep(gnome);
-    gnome.playScene.spawnHat(gnome.container.x, gnome.container.y);
+    gnome.playScene.spawnHat(
+      gnome.container.x,
+      gnome.container.y,
+      gnome.shapeGene,
+      gnome.colorGene,
+      gnome.decorationGene,
+    );
   }
 
   return true;

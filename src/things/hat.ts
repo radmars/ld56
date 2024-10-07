@@ -2,21 +2,21 @@ import { GameObjects, Input } from 'phaser';
 import PlayScene, { GameState } from '@/scenes/PlayScene';
 
 export enum HatShape {
-  basic,
-  flop,
-  witch,
+  a,
+  b,
+  c,
 }
 
 export enum HatColor {
-  red,
-  blue,
-  gold,
+  a,
+  b,
+  c,
 }
 
 export enum HatDecoration {
-  none,
-  star,
-  moon,
+  a,
+  b,
+  c,
 }
 
 export const HatZone = 'TheHatZone';
@@ -41,6 +41,20 @@ export function createHat(
 ): Hat {
   const sprite = add.sprite(x, y, playScene.gameAssets!.hatTexture, 4);
   sprite.setInteractive({ draggable: true });
+
+  switch (pColor) {
+    case HatColor.a:
+      sprite.setTint(0xff0000);
+      break;
+    case HatColor.b:
+      sprite.setTint(0x0000ff);
+      break;
+    case HatColor.c:
+      sprite.setTint(0xffd700);
+      break;
+  }
+
+  sprite.play('hat-shape-' + pShape);
 
   const zone = add.zone(x, y, 32, 32).setRectangleDropZone(32, 32);
   zone.setName(HatZone);
@@ -110,8 +124,14 @@ export function createHat(
 
           destroyHatAndEverythingItStandsFor(h);
           destroyHatAndEverythingItStandsFor(hat);
-          playScene.spawnGnome(h.sprite.x, h.sprite.y);
           playScene.sound.play('hatgrow');
+          playScene.spawnGnome(
+            h.sprite.x,
+            h.sprite.y,
+            determineHatShapeGene(h, hat),
+            determineHatColorGene(h, hat),
+            determineHatDecorationGene(h, hat),
+          );
         }
       } else {
         console.log(`putting hat zone back`);
@@ -130,4 +150,40 @@ export function createHat(
 function destroyHatAndEverythingItStandsFor(h: Hat) {
   h.sprite.destroy();
   h.zone?.destroy();
+}
+
+function determineHatShapeGene(catcher: Hat, pitcher: Hat): HatShape {
+  if (catcher.shape == HatShape.c || pitcher.shape == HatShape.c) {
+    return HatShape.c;
+  } else if (catcher.shape == HatShape.b || pitcher.shape == HatShape.b) {
+    return HatShape.b;
+  }
+
+  return HatShape.a;
+}
+
+function determineHatColorGene(catcher: Hat, pitcher: Hat): HatColor {
+  if (catcher.color == HatColor.c || pitcher.color == HatColor.c) {
+    return HatColor.c;
+  } else if (catcher.color == HatColor.b || pitcher.color == HatColor.b) {
+    return HatColor.b;
+  }
+
+  return HatColor.a;
+}
+
+function determineHatDecorationGene(catcher: Hat, pitcher: Hat): HatDecoration {
+  if (
+    catcher.decoration == HatDecoration.c ||
+    pitcher.decoration == HatDecoration.c
+  ) {
+    return HatDecoration.c;
+  } else if (
+    catcher.decoration == HatDecoration.b ||
+    pitcher.decoration == HatDecoration.b
+  ) {
+    return HatDecoration.b;
+  }
+
+  return HatDecoration.a;
 }

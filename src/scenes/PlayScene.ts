@@ -44,6 +44,9 @@ export interface GameAssets {
   sellBoxHoverTexture: Textures.Texture;
   gnomeBodyTexture: Textures.Texture;
   hatTexture: Textures.Texture;
+  hatShapeA: Animations.Animation;
+  hatShapeB: Animations.Animation;
+  hatShapeC: Animations.Animation;
   gnomeYoungIdleAnimation: Animations.Animation;
   ratTexture: Textures.Texture;
   mushroomTexture: Textures.Texture;
@@ -80,7 +83,7 @@ export default class PlayScreen extends Phaser.Scene {
     this.gameState = {
       gnomes: [],
       hats: [],
-      cash: 20,
+      cash: 500,
       hud: {} as HUD, // plz ignore lies.
     };
   }
@@ -219,6 +222,43 @@ export default class PlayScreen extends Phaser.Scene {
     const sellBoxTexture = this.textures.get('sellbox');
     const sellBoxHoverTexture = this.textures.get('sellbox-hover');
 
+    const hatShapeA = must(
+      'load-hat-shape-a',
+      this.anims.create({
+        key: 'hat-shape-1',
+        frameRate: 0,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(hatTexture.key, {
+          start: 0,
+          end: 0,
+        }),
+      }),
+    );
+    const hatShapeB = must(
+      'load-hat-shape-b',
+      this.anims.create({
+        key: 'hat-shape-2',
+        frameRate: 0,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(hatTexture.key, {
+          start: 1,
+          end: 1,
+        }),
+      }),
+    );
+    const hatShapeC = must(
+      'load-hat-shape-c',
+      this.anims.create({
+        key: 'hat-shape-3',
+        frameRate: 0,
+        repeat: -1,
+        frames: this.anims.generateFrameNames(hatTexture.key, {
+          start: 2,
+          end: 2,
+        }),
+      }),
+    );
+
     const gnomeYoungIdleAnimation = must(
       'load-gnome-idle-young',
       this.anims.create({
@@ -330,6 +370,9 @@ export default class PlayScreen extends Phaser.Scene {
       sellBoxHoverTexture,
       gnomeBodyTexture,
       hatTexture,
+      hatShapeA,
+      hatShapeB,
+      hatShapeC,
       gnomeYoungIdleAnimation,
       ratTexture,
       mushroomTexture,
@@ -351,7 +394,13 @@ export default class PlayScreen extends Phaser.Scene {
     };
   }
 
-  spawnGnome(x: number, y: number) {
+  spawnGnome(
+    x: number,
+    y: number,
+    shapeGene: HatShape,
+    colorGene: HatColor,
+    decorationGene: HatDecoration,
+  ) {
     this.gameState.gnomes.push(
       createGnome(
         this.gameAssets!,
@@ -361,20 +410,28 @@ export default class PlayScreen extends Phaser.Scene {
         this.matter,
         this.time,
         this,
+        shapeGene,
+        colorGene,
+        decorationGene,
       ),
     );
   }
 
-  //TODO This should take in shape, coor, decoration from the calling context
-  spawnHat(x: number, y: number) {
+  spawnHat(
+    x: number,
+    y: number,
+    shapeGene: HatShape,
+    colorGene: HatColor,
+    decorationGene: HatDecoration,
+  ) {
     this.gameState.hats.push(
       createHat(
         x,
         y,
         this.add,
-        HatShape.basic,
-        HatColor.red,
-        HatDecoration.none,
+        shapeGene,
+        colorGene,
+        decorationGene,
         this.gameState,
         this,
       ),
@@ -412,7 +469,13 @@ export default class PlayScreen extends Phaser.Scene {
     );
     bg.depth = -2;
 
-    this.spawnGnome(WINDOW_CENTER.x, WINDOW_CENTER.y);
+    this.spawnGnome(
+      WINDOW_CENTER.x,
+      WINDOW_CENTER.y,
+      HatShape.a,
+      HatColor.a,
+      HatDecoration.a,
+    );
     this.gameState.sellBox = createSellBox(this.gameAssets, 32, 32, this.add);
     this.gameState.belt = createBelt(
       this.gameState,

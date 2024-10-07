@@ -7,7 +7,7 @@ import {
 } from '@/things/gnome';
 import Phaser, { GameObjects, type Animations, type Textures } from 'phaser';
 import { createSellBox, SellBox } from '@/things/sellbox';
-import { createBelt, updateBelt, type Belt } from '@/things/belt';
+import { beltHeight, createBelt, updateBelt, type Belt } from '@/things/belt';
 import { updatePrices } from '@/things/item';
 import {
   createHat,
@@ -579,6 +579,7 @@ export default class PlayScreen extends Phaser.Scene {
       this.gameAssets.backgroundTexture,
     );
     bg.depth = -2;
+    this.physics.world.setBounds(0, 0, 800, 800 - beltHeight);
 
     this.spawnGnome(
       WINDOW_CENTER.x,
